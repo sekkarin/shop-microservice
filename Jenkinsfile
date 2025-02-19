@@ -12,15 +12,6 @@ pipeline {
                 script {
                     sh '''
                     echo "Unit Tests"
-                    // if [ -f "composer.json" ]; then
-                    //     composer install --no-interaction
-                    //     vendor/bin/phpunit --log-junit unit-tests.xml
-                    // elif [ -f "package.json" ]; then
-                    //     npm install
-                    //     npm test -- --ci --json --outputFile=unit-tests.json
-                    // else
-                    //     echo "No test framework detected. Skipping..."
-                    // fi
                     '''
                 }
             }
