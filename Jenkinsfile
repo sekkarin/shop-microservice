@@ -52,13 +52,6 @@ pipeline {
                 }
             }
         }
-        stage('SCA - Dependency Scan') {
-            steps {
-                script {
-                    sh 'echo "Scan security"'
-                }
-            }
-        }
         stage('Build & Container Security Scan') {
             steps {
                 script {
