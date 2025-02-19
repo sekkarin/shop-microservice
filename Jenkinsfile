@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker run --rm -v $(pwd):/app -w /app golang:1.21 bash -c "
+                    docker run --rm -v ${env.WORKSPACE}:/app -w /app golang:1.21 bash -c "
                         go mod tidy &&
                         cd __test__ &&
                         go test ./... -v -coverprofile=coverage.out | tee go-test-results.txt
