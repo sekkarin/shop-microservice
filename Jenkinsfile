@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     withSonarQubeEnv('sonarqube-server') {
-                        sh "cd ConsoleApp1 && ${SCANNER_HOME}/bin/sonar-scanner \
+                        sh "${SCANNER_HOME}/bin/sonar-scanner \
                             -Dsonar.projectKey=shop-mricoservices \
                             -Dsonar.sources=."
                     }
