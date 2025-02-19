@@ -27,9 +27,7 @@ pipeline {
             steps {
                 script {
                     withSonarQubeEnv('sonarqube-server') {
-                        sh "${SCANNER_HOME}/bin/sonar-scanner \
-                            -Dsonar.projectKey=shop-mricoservices \
-                            -Dsonar.sources=."
+                        sh "${SCANNER_HOME}/bin/sonar-scanner"
                     }
                 }
             }
@@ -38,7 +36,7 @@ pipeline {
         stage('Scan security') {
             steps {
                 script {
-                    sh '...'
+                    sh 'echo "Scan security"'
                 }
             }
         }
