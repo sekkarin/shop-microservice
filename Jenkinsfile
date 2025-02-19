@@ -11,16 +11,19 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    echo "Unit Tests"
+                    docker run --rm -v $(pwd):/app -w /app golang:1.21 bash -c "
+                        go mod tidy &&
+                        cd __test__ &&
+                        go test ./... -v -coverprofile=coverage.out | tee go-test-results.txt
+                    "
                     '''
                 }
             }
-            // post {
-            //     always {
-            //         junit '**/unit-tests.xml'
-            //         archiveArtifacts artifacts: '**/unit-tests.json', fingerprint: true
-            //     }
-            // }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'go-test-results.txt', fingerprint: true
+                }
+            }
         }
         stage('SAST - Code Security Scan') {
             environment {
