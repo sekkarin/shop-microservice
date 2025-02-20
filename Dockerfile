@@ -75,4 +75,4 @@ COPY --from=build /bin/server /bin/
 EXPOSE 3000
 
 # What the container should run when it is started.
-ENTRYPOINT [ "/bin/server" ]
+ENTRYPOINT [ "/bin/server","/etc/env/.env" ]
