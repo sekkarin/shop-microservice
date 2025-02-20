@@ -82,6 +82,13 @@ func Start(pctx context.Context, cfg *config.Config, db *mongo.Client) {
 	// Body Limit
 	s.app.Use(middleware.BodyLimit("10M"))
 
+	s.app.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Response().Header().Set("X-Content-Type-Options", "nosniff")
+			return next(c)
+		}
+	})
+
 	switch s.cfg.App.Name {
 	case "auth":
 		s.authService()
