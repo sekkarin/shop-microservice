@@ -9,7 +9,7 @@ version: '3.8'
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  container_name: "api-auth"
+  # container_name: "api-auth"
   server:
     build:
       context: .
