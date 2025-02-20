@@ -63,7 +63,7 @@ pipeline {
                      docker images |grep sekkarindev/shop-microservice
                     '''
                     sh '''
-                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app aquasec/trivy:latest image -f json -o /app/trivy-report-image.json --scanners vuln ${IMAGE_NAME}:$BUILD_NUMBER
+                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app aquasec/trivy:latest image -f json -o /app/trivy-report-image.json --scanners vuln,misconfig,secret,license ${IMAGE_NAME}:$BUILD_NUMBER
                     '''
                 }
             }
