@@ -3,7 +3,7 @@ FROM golang:1.21-bullseye AS build
 WORKDIR /app
 
 COPY . ./
-RUN go mod download
+RUN go mod tidy
 
 RUN CGO_ENABLED=0 go build -o /bin/app
 
