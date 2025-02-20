@@ -3,6 +3,7 @@ package server
 import (
 	"log"
 
+	"github.com/labstack/echo"
 	"github.com/sekkarin/shop-microservice/modules/auth/authHandler"
 	authPb "github.com/sekkarin/shop-microservice/modules/auth/authPb"
 	"github.com/sekkarin/shop-microservice/modules/auth/authRepository"
@@ -25,7 +26,12 @@ func (s *server) authService() {
 		log.Printf("Auth gRPC server listening on %s", s.cfg.Grpc.AuthUrl)
 		grpcServer.Serve(lis)
 	}()
-
+	s.app.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Response().Header().Set("X-Content-Type-Options", "nosniff")
+			return next(c)
+		}
+	})
 	auth := s.app.Group("")
 
 	// Health Check
