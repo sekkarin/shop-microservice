@@ -84,10 +84,13 @@ pipeline {
                 script {
                     sh 'docker compose -f compose.yaml up -d --build'
                     sh '''
-                        mkdir -p ${WORKSPACE}/zap/wrk &&
-                        chmod -R 777 ${WORKSPACE}/zap/wrk  &&
+                        mkdir -p ${WORKSPACE}/zap/wrk 
+                        chmod -R 777 ${WORKSPACE}/zap/wrk  
+
+                        DOCKER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' shop-auth)
+
                         docker run --rm --user root -v ${WORKSPACE}:/zap/wrk:rw  \
-                            $ZAP_IMAGE zap-baseline.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000 -r /zap/wrk/zap_report.html
+                            $ZAP_IMAGE zap-baseline.py -t http://$DOCKER_IP:3000 -r /zap/wrk/zap_report.html
                     '''
                 }
             }
