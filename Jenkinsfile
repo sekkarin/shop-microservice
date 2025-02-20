@@ -2,6 +2,10 @@ pipeline {
     agent any
     environment {
         IMAGE_NAME = 'sekkarindev/shop-microservice'
+        ZAP_IMAGE = 'zaproxy/zap-stable:2.16.0'  // Docker image for OWASP ZAP
+        TARGET_URL = 'http://your-app-url.com' // Replace with your application's URL
+        GOLANG_IMAGE = 'golang:1.23'
+        TRIVY_IMAGE = 'aquasec/trivy:0.59.1'
     }
 
     stages {
@@ -14,7 +18,7 @@ pipeline {
         //     steps {
         //         script {
         //             sh '''
-        //             docker run --rm -v $WORKSPACE:/app -w /app golang:1.23 sh -c "go mod tidy &&
+        //             docker run --rm -v $WORKSPACE:/app -w /app ${GOLANG_IMAGE} sh -c "go mod tidy &&
         //                 cd __test__ &&
         //                 go test ./... -v -coverprofile=coverage.out | tee go-test-results.txt"
         //             '''
@@ -44,7 +48,7 @@ pipeline {
         //     steps {
         //         script {
         //             sh '''
-        //             docker run --rm  -v $WORKSPACE:/app aquasec/trivy:latest fs -f json -o /app/trivy-report.json --scanners vuln,misconfig,secret,license /app
+        //             docker run --rm  -v $WORKSPACE:/app ${TRIVY_IMAGE} fs -f json -o /app/trivy-report.json --scanners vuln,misconfig,secret,license /app
         //             '''
         //         }
         //     }
@@ -55,29 +59,29 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Build & Container Security Scan') {
-            steps {
-                script {
-                    sh '''
-                     docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:$BUILD_NUMBER -f ./build/Dockerfile .
-                     docker images |grep sekkarindev/shop-microservice
-                    '''
-                    sh '''
-                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app aquasec/trivy:latest image -f json -o /app/trivy-report-image.json --scanners vuln,misconfig,secret,license ${IMAGE_NAME}:$BUILD_NUMBER
-                    '''
-                }
-            }
-            post {
-                always {
-                    // Archive the Trivy report after the scan
-                    archiveArtifacts artifacts: 'trivy-report-image.json', allowEmptyArchive: true
-                }
-            }
-        }
+        // stage('Build & Container Security Scan') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //              docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:$BUILD_NUMBER -f ./build/Dockerfile .
+        //             '''
+        //             sh '''
+        //             docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image -f json -o /app/trivy-report-image.json --scanners vuln,misconfig,secret,license ${IMAGE_NAME}:$BUILD_NUMBER
+        //             '''
+        //         }
+        //     }
+        //     post {
+        //         always {
+        //             archiveArtifacts artifacts: 'trivy-report-image.json', allowEmptyArchive: true
+        //         }
+        //     }
+        // }
         stage('DAST - Web Security Scan') {
             steps {
                 script {
-                    sh 'echo "Scan security"'
+                    sh '''
+                        docker compose -f ./build/compose.yaml up -d
+                    '''
                 }
             }
         }
