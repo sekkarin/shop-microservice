@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+	<testsuite tests="1" failures="0" time="0.099" name="github.com/sekkarin/shop-microservice/__test__">
+		<properties>
+			<property name="go.version" value="go1.23.4"></property>
+		</properties>
+		<testcase classname="__test__" name="TestLogin" time="0.000"></testcase>
+	</testsuite>
+</testsuites>
