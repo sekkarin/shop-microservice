@@ -84,9 +84,8 @@ pipeline {
                 script {
                     sh 'docker compose -f compose.yaml up -d --build'
                     sh '''
-                        docker run -d --name zap -v $WORKSPACE:/zap/wr -p 8081:8080 $ZAP_IMAGE
-                        sleep $ZAP_WAIT_TIME  # Wait for ZAP to initialize
-                        docker exec zap zap-baseline.py -t $TARGET_URL -g genhtml -o /zap/wrk/spider_report
+                        docker run --rm -u zap -v /var/run/docker.sock:/var/run/docker.sock -v ${WORKSPACE}:/zap/wrk \
+                            $ZAP_IMAGE zap-baseline.py -t $TARGET_URL -g gen.conf -r zap_report.html
                     '''
                 }
             }
