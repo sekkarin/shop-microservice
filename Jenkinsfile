@@ -62,6 +62,9 @@ pipeline {
                      docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:$BUILD_NUMBER -f ./build/Dockerfile .
                      docker images |grep sekkarindev/shop-microservice
                     '''
+                    sh '''
+                    docker run --rm  -v $WORKSPACE:/app aquasec/trivy:latest image -f json -o /app/trivy-report-image-${IMAGE_NAME}.json --scanners vuln ${IMAGE_NAME}:$BUILD_NUMBER
+                    '''
                 }
             }
         }
