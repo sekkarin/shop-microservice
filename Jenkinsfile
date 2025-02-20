@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker run --rm  -v $WORKSPACE:/app aquasec/trivy:latest fs -f json -o /app/trivy-report.json --scanners vuln /app
+                    docker run --rm  -v $WORKSPACE:/app aquasec/trivy:latest fs -f json -o /app/trivy-report.json --scanners vuln,misconfig,secret,license /app
                     '''
                 }
             }
