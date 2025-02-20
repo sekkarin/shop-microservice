@@ -48,7 +48,7 @@ pipeline {
             post {
                 always {
                     // Archive the Trivy report after the scan
-                    archiveArtifacts artifacts: 'trivy-report.txt', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'trivy-report-*.txt', allowEmptyArchive: true
                 }
             }
         }
