@@ -8,10 +8,10 @@
 
 ################################################################################
 # Create a stage for building the application.
-ARG GO_VERSION=1.23
+ARG GO_VERSION=1.23.4
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
 WORKDIR /src
-
+COPY go.mod go.sum ./
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /go/pkg/mod/ to speed up subsequent builds.
 # Leverage bind mounts to go.sum and go.mod to avoid having to copy them into
