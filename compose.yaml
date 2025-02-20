@@ -23,7 +23,7 @@ services:
     volumes:
       - ./env/test/inventory/:/etc/env/
     ports:
-      - 3000:3000
+      - 3001:3000
   shop-item:
     build:
       context: .
@@ -31,7 +31,7 @@ services:
     volumes:
       - ./env/test/item/:/etc/env/
     ports:
-      - 3000:3000
+      - 3002:3000
   shop-payment:
     build:
       context: .
@@ -39,7 +39,7 @@ services:
     volumes:
       - ./env/test/payment/:/etc/env/
     ports:
-      - 3000:3000
+      - 3003:3000
   shop-player:
     build:
       context: .
@@ -47,4 +47,4 @@ services:
     volumes:
       - ./env/test/player/:/etc/env/
     ports:
-      - 3000:3000
+      - 3004:3000
