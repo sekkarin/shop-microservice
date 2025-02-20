@@ -58,9 +58,8 @@ pipeline {
         stage('Build & Container Security Scan') {
             steps {
                 script {
-                    def commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     sh '''
-                     docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${commitId} .
+                     docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:$BUILD_NUMBER .
                      docker images |grep sekkarindev/shop-microservice
                     '''
                 }
