@@ -1,4 +1,3 @@
-version: '3.8'
 # Comments are provided throughout this file to help you get started.
 # If you need more help, visit the Docker Compose reference guide at
 # https://docs.docker.com/go/compose-spec-reference/
@@ -9,13 +8,10 @@ version: '3.8'
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  # container_name: "api-auth"
   server:
     build:
       context: .
       target: final
-    secrets:
-      - auth-env
     ports:
       - 3000:3000
 
@@ -48,7 +44,7 @@ services:
 #       retries: 5
 # volumes:
 #   db-data:
-secrets:
-  auth-env:
-    file: ../env/test/auth/.env
+# secrets:
+#   db-password:
+#     file: db/password.txt
 
