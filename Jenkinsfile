@@ -84,18 +84,18 @@ pipeline {
                 script {
                     sh 'docker compose -f compose.yaml up -d --build'
                     sh '''
-                        DOCKER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' shop-auth)
+                        DOCKER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' shop-microservices-shop-auth-1)
 
                         docker run --rm --user root -v ${WORKSPACE}:/zap/wrk:rw  \
                             $ZAP_IMAGE zap-baseline.py -t http://$DOCKER_IP:3000 -r /zap/wrk/zap_report.html
                     '''
                 }
             }
-            // post {
-            //     always {
-            //         sh 'docker compose -f compose.yaml down'
-            //     }
-            // }
+            post {
+                always {
+                    sh 'docker compose -f compose.yaml down'
+                }
+            }
         }
         stage('Deploy to Kubernetes') {
             steps {
