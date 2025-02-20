@@ -84,9 +84,6 @@ pipeline {
                 script {
                     sh 'docker compose -f compose.yaml up -d --build'
                     sh '''
-                        mkdir -p ${WORKSPACE}/zap/wrk 
-                        chmod -R 777 ${WORKSPACE}/zap/wrk  
-
                         DOCKER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' shop-auth)
 
                         docker run --rm --user root -v ${WORKSPACE}:/zap/wrk:rw  \
