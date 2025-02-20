@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker run --rm -v "${pwd()}:/app" -w /app golang:1.23 sh -c "go mod tidy &&
+                    docker run --rm -v ${pwd()}:/app -w /app golang:1.23 sh -c "go mod tidy &&
                         cd __test__ &&
                         go test ./... -v -coverprofile=coverage.out | tee go-test-results.txt"
                     '''
@@ -40,9 +40,9 @@ pipeline {
         stage('SCA - Dependency Scan') {
             steps {
                 script {
-                    sh """
-                    docker run --rm  -v "${pwd()}:/app" aquasec/trivy:latest fs /app
-                    """
+                    sh '''
+                    docker run --rm  -v ${pwd()}:/app aquasec/trivy:latest fs /app
+                    '''
                 }
             }
         }
