@@ -80,7 +80,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        docker compose -f ./build/compose.yaml up --build
+                        docker compose -f compose.yaml up --build
                     '''
                 }
             }
