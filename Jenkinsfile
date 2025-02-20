@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        IMAGE_NAME = 'sekkarindev/shop-microservice'
+    }
 
     stages {
         stage('Fetch Code') {
@@ -54,8 +57,12 @@ pipeline {
         }
         stage('Build & Container Security Scan') {
             steps {
+                def commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                 script {
-                    sh 'echo "Scan security"'
+                    sh '''
+                     docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${commitId} .
+                     docker images | sekkarindev/shop-microservice
+                    '''
                 }
             }
         }
