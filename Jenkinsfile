@@ -85,7 +85,7 @@ pipeline {
                     sh 'docker compose -f compose.yaml up -d --build'
                     sh '''
                         docker run --rm --user root -v ${WORKSPACE}:/zap/wrk \
-                            $ZAP_IMAGE zap-baseline.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000 -r ./zap_report.html
+                            $ZAP_IMAGE zap-baseline.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000 -r ./zap_report.html -d
                     '''
                 }
             }
