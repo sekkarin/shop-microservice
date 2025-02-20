@@ -61,7 +61,7 @@ pipeline {
                 script {
                     sh '''
                      docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${commitId} .
-                     docker images | sekkarindev/shop-microservice
+                     docker images |grep sekkarindev/shop-microservice
                     '''
                 }
             }
