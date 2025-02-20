@@ -84,6 +84,11 @@ pipeline {
                     '''
                 }
             }
+            post {
+                always {
+                    sh 'docker compose -f compose.yaml down'
+                }
+            }
         }
         stage('Deploy to Kubernetes') {
             steps {
