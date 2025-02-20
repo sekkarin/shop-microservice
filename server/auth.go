@@ -26,7 +26,7 @@ func (s *server) authService() {
 		grpcServer.Serve(lis)
 	}()
 
-	auth := s.app.Group("/auth_v1")
+	auth := s.app.Group("")
 
 	// Health Check
 	auth.GET("", s.healthCheckService)
