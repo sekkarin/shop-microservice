@@ -1,11 +1,14 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = 'sekkarindev/shop-microservice'
         ZAP_IMAGE = 'zaproxy/zap-stable:2.16.0'  // Docker image for OWASP ZAP
-        TARGET_URL = 'http://your-app-url.com' // Replace with your application's URL
         GOLANG_IMAGE = 'golang:1.23'
         TRIVY_IMAGE = 'aquasec/trivy:0.59.1'
+
+        IMAGE_NAME = 'sekkarindev/shop-microservice'
+        TARGET_URL = 'http://localhost:3000'  // URL of the app you want to scan
+        ZAP_PORT = '80'  // Port that ZAP will use
+        ZAP_WAIT_TIME = '30'  // Wait for ZAP container to initialize
     }
 
     stages {
@@ -79,8 +82,11 @@ pipeline {
         stage('DAST - Web Security Scan') {
             steps {
                 script {
+                    sh 'docker compose -f compose.yaml up -d --build'
                     sh '''
-                        docker compose -f compose.yaml up -d --build
+                        docker run -d --name zap -v $WORKSPACE:/zap/wr -p 8081:8080 $ZAP_IMAGE
+                        sleep $ZAP_WAIT_TIME  # Wait for ZAP to initialize
+                        docker exec zap zap-baseline.py -t $TARGET_URL -g genhtml -o /zap/wrk/spider_report
                     '''
                 }
             }
