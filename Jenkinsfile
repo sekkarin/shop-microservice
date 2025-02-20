@@ -41,14 +41,14 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker run --rm  -v $WORKSPACE:/app aquasec/trivy:latest fs json -o results.json  /app 
+                    docker run --rm  -v $WORKSPACE:/app aquasec/trivy:latest fs -f json -o trivy-report.json /app
                     '''
                 }
             }
             post {
                 always {
                     // Archive the Trivy report after the scan
-                    archiveArtifacts artifacts: 'results.json', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'trivy-report.json', allowEmptyArchive: true
                 }
             }
         }
