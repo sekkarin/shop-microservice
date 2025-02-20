@@ -67,6 +67,12 @@ pipeline {
                     '''
                 }
             }
+            post {
+                always {
+                    // Archive the Trivy report after the scan
+                    archiveArtifacts artifacts: 'trivy-report-image-${IMAGE_NAME}.json', allowEmptyArchive: true
+                }
+            }
         }
         stage('DAST - Web Security Scan') {
             steps {
