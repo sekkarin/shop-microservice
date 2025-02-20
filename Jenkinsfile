@@ -63,14 +63,14 @@ pipeline {
                      docker images |grep sekkarindev/shop-microservice
                     '''
                     sh '''
-                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app aquasec/trivy:latest image -f json -o /app/trivy-report-image-${IMAGE_NAME}.json --scanners vuln ${IMAGE_NAME}:$BUILD_NUMBER
+                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app aquasec/trivy:latest image -f json -o /app/trivy-report-image.json --scanners vuln ${IMAGE_NAME}:$BUILD_NUMBER
                     '''
                 }
             }
             post {
                 always {
                     // Archive the Trivy report after the scan
-                    archiveArtifacts artifacts: 'trivy-report-image-${IMAGE_NAME}.json', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'trivy-report-image.json', allowEmptyArchive: true
                 }
             }
         }
