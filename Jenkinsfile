@@ -41,8 +41,14 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker run --rm  -v $WORKSPACE:/app aquasec/trivy:latest fs /app
+                    docker run --rm  -v $WORKSPACE:/app aquasec/trivy:latest fs /app > trivy-report-${currentDate}.txt || true
                     '''
+                }
+            }
+            post {
+                always {
+                    // Archive the Trivy report after the scan
+                    archiveArtifacts artifacts: 'trivy-report.txt', allowEmptyArchive: true
                 }
             }
         }
