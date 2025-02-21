@@ -25,7 +25,7 @@ func (s *server) authService() {
 		log.Printf("Auth gRPC server listening on %s", s.cfg.Grpc.AuthUrl)
 		grpcServer.Serve(lis)
 	}()
-	auth := s.app.Group("")
+	auth := s.app.Group("/auth_v1")
 
 	// Health Check
 	auth.GET("", s.healthCheckService)
