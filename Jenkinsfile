@@ -87,28 +87,24 @@ pipeline {
                         docker run --rm --user root -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html -d
                     '''
                 }
+                script {
+                    // Publish the ZAP HTML report to Jenkins
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+                        reportFiles: 'report-api.html',
+                        reportName: 'HTML Report',
+                        reportTitles: '',
+                        useWrapperFileDirectly: true
+                    ])
+                }
             }
             post {
                     always {
                         sh 'docker compose -f compose.yaml down'
                         archiveArtifacts artifacts: 'report-api.html', allowEmptyArchive: true
                     }
-            }
-        }
-        stage('Publish HTML Report') {
-            steps {
-                script {
-                    // Publish the ZAP HTML report to Jenkins
-                    publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-                    reportFiles: 'report-api.html',
-                    reportName: 'HTML Report',
-                    reportTitles: '',
-                    useWrapperFileDirectly: true
-                ])
-                }
             }
         }
         stage('Deploy to Kubernetes') {
