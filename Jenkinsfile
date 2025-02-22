@@ -82,10 +82,17 @@ pipeline {
         stage('DAST - Web Security Scan') {
             steps {
                 script {
-                    sh 'docker compose -f compose.yaml up -d --build'
-                    sh '''
+                    withCredentials([
+                        file(credentialsId: 'VAULT_SECRET_ID', variable: 'SECRET_ID'),
+                        file(credentialsId: 'VAULT_SECRET_TOKEN', variable: 'SECRET_TOKEN')
+                    ]) {
+                        sh 'docker compose -f compose.yaml up -d --build'
+                        sh 'cp $SECRET_ID /vault-agent-config/secret_id'
+                        sh 'cp $SECRET_TOKEN /vault-agent-config/token'
+                        sh '''
                         docker run --rm --user root -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html -d
                     '''
+                    }
                 }
             }
             post {
