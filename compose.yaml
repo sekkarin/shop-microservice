@@ -8,6 +8,20 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
+  services:
+  vault-agent:
+    image: hashicorp/vault:1.18
+    container_name: vault-agent
+    entrypoint:  /bin/sh -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
+    environment:
+      VAULT_ADDR: http://192.168.60.50:8200
+    volumes:
+      - ./root/vault-agent-config:/etc/vault:rw
+      - ./secrets:/vault/secrets/
+    cap_add:
+      - IPC_LOCK
+    privileged: true
+    restart: unless-stopped
   shop-auth:
     build:
       context: .
