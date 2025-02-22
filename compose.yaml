@@ -8,7 +8,6 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  services:
   vault-agent:
     image: hashicorp/vault:1.18
     container_name: vault-agent
