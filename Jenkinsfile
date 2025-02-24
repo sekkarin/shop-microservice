@@ -86,7 +86,7 @@ pipeline {
                         allowMissing: false,
                         alwaysLinkToLastBuild: false,
                         keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-                        reportFiles: 'CSS-report.html.html',
+                        reportFiles: 'CSS-report.html',
                         reportName: 'HTML Report CSS',
                         reportTitles: '',
                         useWrapperFileDirectly: true
