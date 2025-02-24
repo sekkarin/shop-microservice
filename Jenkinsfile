@@ -97,7 +97,7 @@ pipeline {
                 post {
                     always {
                         sh 'docker compose -f compose.yaml down'
-                        archiveArtifacts artifacts: 'report-api.html', allowEmptyArchive: true
+                        // archiveArtifacts artifacts: 'report-api.html', allowEmptyArchive: true
                     }
                     success {
                         script {
