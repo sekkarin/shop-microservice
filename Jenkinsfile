@@ -89,9 +89,7 @@ pipeline {
                         sh 'mv $SECRET_ID ./vault-agent-config/'
                         sh 'mv $SECRET_TOKEN ./vault-agent-config/'
                         sh 'docker compose -f compose.yaml up -d --build'
-                        sh '''
-                         docker run --rm --user root -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html -d
-                        '''
+                        sh 'docker run --rm --user root -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk "{print $4}" | cut -d "/" -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html -d'    
                     }
                 }
             }
@@ -99,6 +97,9 @@ pipeline {
                 always {
                     sh 'docker compose -f compose.yaml down'
                     sh 'rm -r ./vault-agent-config'
+                    sh 'rm -r ./secrets'
+                }
+                success {
                     publishHTML([
                         allowMissing: false,
                         alwaysLinkToLastBuild: false,
@@ -109,17 +110,6 @@ pipeline {
                         useWrapperFileDirectly: true
                     ])
                 }
-                    // success {
-                    // publishHTML([
-                    //             allowMissing: false,
-                    //             alwaysLinkToLastBuild: false,
-                    //             keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-                    //             reportFiles: 'report-api.html',
-                    //             reportName: 'HTML Report',
-                    //             reportTitles: '',
-                    //             useWrapperFileDirectly: true
-                    //         ])
-                    // }
             }
         // stage('Deploy to Kubernetes') {
         //     steps {
