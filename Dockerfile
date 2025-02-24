@@ -53,7 +53,7 @@ RUN --mount=type=cache,target=/var/cache/apk \
         ca-certificates \
         tzdata \
         && \
-        update-ca-certificates
+        update-ca-certificates --no-cache
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
