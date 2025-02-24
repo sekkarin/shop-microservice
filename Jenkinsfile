@@ -94,43 +94,40 @@ pipeline {
                     '''
                     }
                 }
-                // post {
-                //     always {
-                //         sh 'docker compose -f compose.yaml down'
-                //         archiveArtifacts artifacts: 'report-api.html', allowEmptyArchive: true
-                //          publishHTML([
-                //                 allowMissing: false,
-                //                 alwaysLinkToLastBuild: false,
-                //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-                //                 reportFiles: 'report-api.html',
-                //                 reportName: 'HTML Report',
-                //                 reportTitles: '',
-                //                 useWrapperFileDirectly: true
-                //             ])
-                //     }
-                //     success {
-                //         script {
-                //                 // Publish the ZAP HTML report to Jenkins
-                //                 publishHTML([
-                //                 allowMissing: false,
-                //                 alwaysLinkToLastBuild: false,
-                //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-                //                 reportFiles: 'report-api.html',
-                //                 reportName: 'HTML Report',
-                //                 reportTitles: '',
-                //                 useWrapperFileDirectly: true
-                //             ])
-                //         }
-                //     }
-                // }
             }
-            // stage('Deploy to Kubernetes') {
-            //     steps {
-            //         script {
-            //             sh 'echo "Deploy..........."'
-            //         }
-            //     }
-            // }
+            post {
+                always {
+                    sh 'docker compose -f compose.yaml down'
+                    archiveArtifacts artifacts: 'report-api.html', allowEmptyArchive: true
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+                        reportFiles: 'report-api.html',
+                        reportName: 'HTML Report',
+                        reportTitles: '',
+                        useWrapperFileDirectly: true
+                    ])
+                }
+                    // success {
+                    // publishHTML([
+                    //             allowMissing: false,
+                    //             alwaysLinkToLastBuild: false,
+                    //             keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+                    //             reportFiles: 'report-api.html',
+                    //             reportName: 'HTML Report',
+                    //             reportTitles: '',
+                    //             useWrapperFileDirectly: true
+                    //         ])
+                    // }
+            }
+        // stage('Deploy to Kubernetes') {
+        //     steps {
+        //         script {
+        //             sh 'echo "Deploy..........."'
+        //         }
+        //     }
+        // }
         }
     }
 }
