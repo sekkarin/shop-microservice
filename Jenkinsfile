@@ -99,7 +99,6 @@ pipeline {
                 always {
                     sh 'docker compose -f compose.yaml down'
                     sh 'rm -r ./vault-agent-config'
-                    sh 'rm -r ./secrets'
                 }
                 success {
                     publishHTML([
