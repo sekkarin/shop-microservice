@@ -27,38 +27,48 @@ services:
       context: .
       target: final
     volumes:
-      - ./env/test/auth/:/etc/env/
+      - ./secrets/auth-test/:/etc/env/
     ports:
       - 3000:3000
+    depends_on:
+      - vault-agent
   shop-inventory:
     build:
       context: .
       target: final
     volumes:
-      - ./env/test/inventory/:/etc/env/
+      - ./secrets/inventory-test/:/etc/env/
     ports:
       - 3001:3000
+    depends_on:
+      - vault-agent
   shop-item:
     build:
       context: .
       target: final
     volumes:
-      - ./env/test/item/:/etc/env/
+      - ./secrets/item-test/:/etc/env/
     ports:
       - 3002:3000
+    depends_on:
+      - vault-agent
   shop-payment:
     build:
       context: .
       target: final
     volumes:
-      - ./env/test/payment/:/etc/env/
+      - ./secrets/payment-test/:/etc/env/
     ports:
       - 3003:3000
+    depends_on:
+      - vault-agent
   shop-player:
     build:
       context: .
       target: final
     volumes:
-      - ./env/test/player/:/etc/env/
+      - ./secrets/player-test/:/etc/env/
     ports:
       - 3004:3000
+    depends_on:
+      - vault-agent
