@@ -133,8 +133,7 @@ pipeline {
                 script {
                     sh 'echo "Deploy..........."'
                 }
-            }
-            script {
+                script {
                     def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
                     def servicesToDeploy = []
 
@@ -149,6 +148,7 @@ pipeline {
                     }
                     echo "$changes"
                     env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
+                }
             }
         }
     }
