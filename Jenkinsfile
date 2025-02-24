@@ -73,7 +73,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                     docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:$BUILD_NUMBER -f ./build/Dockerfile .
+                     docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:$BUILD_NUMBER -f ./Dockerfile .
                     '''
                     sh '''
                     docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${IMAGE_NAME}:$BUILD_NUMBER
