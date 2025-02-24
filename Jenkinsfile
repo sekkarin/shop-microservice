@@ -93,8 +93,8 @@ pipeline {
                         docker run --rm --user root -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html -d
                     '''
                     }
-            }
-            post {
+                }
+                post {
                     always {
                         sh 'docker compose -f compose.yaml down'
                         archiveArtifacts artifacts: 'report-api.html', allowEmptyArchive: true
@@ -113,25 +113,26 @@ pipeline {
                             ])
                         }
                     }
+                }
             }
-        }
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    sh 'echo "Deploy..........."'
+            stage('Deploy to Kubernetes') {
+                steps {
+                    script {
+                        sh 'echo "Deploy..........."'
+                    }
                 }
             }
         }
-    }
-    post {
-        failure {
-            script {
-                echo 'Security scan failed! Fix issues before proceeding.'
+        post {
+            failure {
+                script {
+                    echo 'Security scan failed! Fix issues before proceeding.'
+                }
             }
-        }
-        success {
-            script {
-                echo 'Pipeline passed successfully!'
+            success {
+                script {
+                    echo 'Pipeline passed successfully!'
+                }
             }
         }
     }
