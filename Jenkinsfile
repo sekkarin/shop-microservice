@@ -115,13 +115,13 @@ pipeline {
                     }
                 }
             }
-            stage('Deploy to Kubernetes') {
-                steps {
-                    script {
-                        sh 'echo "Deploy..........."'
-                    }
-                }
-            }
+            // stage('Deploy to Kubernetes') {
+            //     steps {
+            //         script {
+            //             sh 'echo "Deploy..........."'
+            //         }
+            //     }
+            // }
         }
     }
 }
