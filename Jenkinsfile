@@ -123,17 +123,5 @@ pipeline {
                 }
             }
         }
-        post {
-            failure {
-                script {
-                    echo 'Security scan failed! Fix issues before proceeding.'
-                }
-            }
-            success {
-                script {
-                    echo 'Pipeline passed successfully!'
-                }
-            }
-        }
     }
 }
