@@ -27,11 +27,11 @@ pipeline {
                     '''
                 }
             }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'go-test-results.txt', fingerprint: true
-                }
-            }
+            // post {
+            //     always {
+            //         archiveArtifacts artifacts: 'go-test-results.txt', fingerprint: true
+            //     }
+            // }
         }
         stage('SAST - Code Security Scan') {
             environment {
