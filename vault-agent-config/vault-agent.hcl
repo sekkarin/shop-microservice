@@ -23,6 +23,22 @@ auto_auth {
 }
 
 template {
-  source      = "/etc/vault/secrets-template"
-  destination = "/vault/secrets/.env"
+  source      = "/etc/vault/auth-template"
+  destination = "/vault/secrets/auth-test/.env"
+}
+template {
+  source      = "/etc/vault/inventory-template"
+  destination = "/vault/secrets/inventory-test/.env"
+}
+template {
+  source      = "/etc/vault/item-template"
+  destination = "/vault/secrets/item-test/.env"
+}
+template {
+  source      = "/etc/vault/payment-template"
+  destination = "/vault/secrets/payment-test/.env"
+}
+template {
+  source      = "/etc/vault/player-template"
+  destination = "/vault/secrets/player-test/.env"
 }
