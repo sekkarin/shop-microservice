@@ -12,6 +12,7 @@ import (
 	"github.com/sekkarin/shop-microservice/pkg/response"
 )
 
+// test
 type (
 	InventoryHttpHandlerService interface {
 		FindPlayerItems(c echo.Context) error

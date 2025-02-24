@@ -136,7 +136,7 @@ pipeline {
                 script {
                     def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
                     def servicesToDeploy = []
-
+                    echo "Changed Files:\n${changes}"
                     if (changes.contains('services/auth-service/')) {
                         servicesToDeploy << 'auth-service'
                     }
@@ -146,7 +146,6 @@ pipeline {
                     if (changes.contains('services/payment-service/')) {
                         servicesToDeploy << 'payment-service'
                     }
-                    echo "$changes"
                     env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
                 }
             }
