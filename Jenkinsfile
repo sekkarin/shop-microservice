@@ -79,17 +79,11 @@ pipeline {
                     sh '''
                      docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
                     '''
-                    // sh '''
-                    // docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
-                    // '''
-                    withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-                        sh "echo $HARBOR_PASS | docker login $HARBOR_REGISTRY -u $HARBOR_USER --password-stdin"
-                        sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
-                        sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
-                    }
+                    sh '''
+                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
+                    '''
                 }
             }
-            
             post {
                 success {
                     publishHTML([
@@ -104,75 +98,82 @@ pipeline {
                 }
             }
         }
-        // stage('DAST - Web Security Scan') {
-        //     steps {
-        //         script {
-        //             withCredentials([
-        //                 file(credentialsId: 'VAULT_SECRET_ID', variable: 'SECRET_ID'),
-        //                 file(credentialsId: 'VAULT_SECRET_TOKEN', variable: 'SECRET_TOKEN')
-        //             ]) {
-        //                 sh 'mv $SECRET_ID ./vault-agent-config/'
-        //                 sh 'mv $SECRET_TOKEN ./vault-agent-config/'
-        //                 sh 'docker compose -f compose.yaml up -d --build'
-        //                 sh '''
-        //                     docker run --rm --user root -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html -d
-        //                 '''
-        //             }
-        //         }
-        //     }
-        //     post {
-        //         always {
-        //             sh 'docker compose -f compose.yaml down'
-        //             sh 'rm -r ./vault-agent-config'
-        //         }
-        //         success {
-        //             publishHTML([
-        //                 allowMissing: false,
-        //                 alwaysLinkToLastBuild: false,
-        //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-        //                 reportFiles: 'report-api.html',
-        //                 reportName: 'HTML Report',
-        //                 reportTitles: '',
-        //                 useWrapperFileDirectly: true
-        //             ])
-        //         }
-        //     }
-        // }
-        // stage('Deploy to Kubernetes') {
-        //     steps {
-        //         script {
-        //             def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
-        //             def servicesToDeploy = []
-        //             echo "Changed Files:\n${changes}"
-        //             if (changes.contains('modules/auth/') || changes.contains('server/auth.go')) {
-        //                 servicesToDeploy << 'auth-service'
-        //             }
-        //             if (changes.contains('modules/inventory/') || changes.contains('server/inventory.go')) {
-        //                 servicesToDeploy << 'inventory-service'
-        //             }
-        //             if (changes.contains('modules/item/') || changes.contains('server/item.go')) {
-        //                 servicesToDeploy << 'item-service'
-        //             }
-        //             if (changes.contains('modules/payment/') || changes.contains('server/payment.go')) {
-        //                 servicesToDeploy << 'payment-service'
-        //             }
-        //             if (changes.contains('modules/player/') || changes.contains('server/player.go')) {
-        //                 servicesToDeploy << 'player-service'
-        //             }
-        //             env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
-        //         }
-        //         // script {
-        //         //     def services = env.SERVICES_TO_DEPLOY.split(' ')
-        //         //     for (service in services) {
-        //         //         sh """
-        //         //         helm upgrade --install ${service} ./services/${service}/deployment \
-        //         //           --set image.repository=${DOCKER_REGISTRY}/${service} \
-        //         //           --set image.tag=${BUILD_NUMBER} \
-        //         //           --kubeconfig=$KUBE_CONFIG
-        //         //         """
-        //         //     }
-        //         // }
-        //     }
-        // }
+        stage('DAST - Web Security Scan') {
+            steps {
+                script {
+                    withCredentials([
+                        file(credentialsId: 'VAULT_SECRET_ID', variable: 'SECRET_ID'),
+                        file(credentialsId: 'VAULT_SECRET_TOKEN', variable: 'SECRET_TOKEN')
+                    ]) {
+                        sh 'mv $SECRET_ID ./vault-agent-config/'
+                        sh 'mv $SECRET_TOKEN ./vault-agent-config/'
+                        sh 'docker compose -f compose.yaml up -d --build'
+                        sh '''
+                            docker run --rm --user root -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html -d
+                        '''
+                    }
+                    withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                        sh "echo $HARBOR_PASS | docker login $HARBOR_REGISTRY -u $HARBOR_USER --password-stdin"
+                        sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
+                        sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
+                    }
+                }
+            }
+            post {
+                always {
+                    sh 'docker compose -f compose.yaml down'
+                    sh 'rm -r ./vault-agent-config'
+                    sh "docker rmi $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
+                    sh "docker rmi $NAME_IMAGE_WITH_REGISTY:latest"
+                }
+                success {
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+                        reportFiles: 'report-api.html',
+                        reportName: 'HTML Report',
+                        reportTitles: '',
+                        useWrapperFileDirectly: true
+                    ])
+                }
+            }
+        }
+    // stage('Deploy to Kubernetes') {
+    //     steps {
+    //         script {
+    //             def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
+    //             def servicesToDeploy = []
+    //             echo "Changed Files:\n${changes}"
+    //             if (changes.contains('modules/auth/') || changes.contains('server/auth.go')) {
+    //                 servicesToDeploy << 'auth-service'
+    //             }
+    //             if (changes.contains('modules/inventory/') || changes.contains('server/inventory.go')) {
+    //                 servicesToDeploy << 'inventory-service'
+    //             }
+    //             if (changes.contains('modules/item/') || changes.contains('server/item.go')) {
+    //                 servicesToDeploy << 'item-service'
+    //             }
+    //             if (changes.contains('modules/payment/') || changes.contains('server/payment.go')) {
+    //                 servicesToDeploy << 'payment-service'
+    //             }
+    //             if (changes.contains('modules/player/') || changes.contains('server/player.go')) {
+    //                 servicesToDeploy << 'player-service'
+    //             }
+    //             env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
+    //         }
+    //         // script {
+    //         //     def services = env.SERVICES_TO_DEPLOY.split(' ')
+    //         //     for (service in services) {
+    //         //         sh """
+    //         //         helm upgrade --install ${service} ./services/${service}/deployment \
+    //         //           --set image.repository=${DOCKER_REGISTRY}/${service} \
+    //         //           --set image.tag=${BUILD_NUMBER} \
+    //         //           --kubeconfig=$KUBE_CONFIG
+    //         //         """
+    //         //     }
+    //         // }
+    //     }
+    // }
     }
 }
