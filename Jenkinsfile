@@ -87,6 +87,8 @@ pipeline {
                     // Use Jenkins Docker credentials to login to Harbor
                     withCredentials([usernamePassword(credentialsId: JenkinsCredential, usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
                         sh "echo $HARBOR_PASS | docker login $HARBOR_REGISTRY -u $HARBOR_USER --password-stdin"
+                        sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
+                        sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
                     }
                 }
             }
