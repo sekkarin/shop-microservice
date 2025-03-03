@@ -131,22 +131,36 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh 'echo "Deploy..........."'
-                }
-                script {
                     def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
                     def servicesToDeploy = []
                     echo "Changed Files:\n${changes}"
-                    if (changes.contains('services/auth-service/')) {
+                    if (changes.contains('modules/auth/')) {
                         servicesToDeploy << 'auth-service'
                     }
-                    if (changes.contains('services/order-service/')) {
-                        servicesToDeploy << 'order-service'
+                    if (changes.contains('modules/inventory/')) {
+                        servicesToDeploy << 'inventory-service'
                     }
-                    if (changes.contains('services/payment-service/')) {
+                    if (changes.contains('modules/item/')) {
+                        servicesToDeploy << 'item-service'
+                    }
+                    if (changes.contains('modules/payment/')) {
                         servicesToDeploy << 'payment-service'
                     }
+                    if (changes.contains('modules/player/')) {
+                        servicesToDeploy << 'player-service'
+                    }
                     env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
+                }
+                script {
+                    def services = env.SERVICES_TO_DEPLOY.split(' ')
+                    for (service in services) {
+                        sh """
+                        helm upgrade --install ${service} ./services/${service}/deployment \
+                          --set image.repository=${DOCKER_REGISTRY}/${service} \
+                          --set image.tag=${BUILD_NUMBER} \
+                          --kubeconfig=$KUBE_CONFIG
+                        """
+                    }
                 }
             }
         }
