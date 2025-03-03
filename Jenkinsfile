@@ -80,7 +80,7 @@ pipeline {
                      docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
                     '''
                     sh '''
-                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${IMAGE_NAME}:$BUILD_NUMBER
+                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
                     '''
                 }
             }
