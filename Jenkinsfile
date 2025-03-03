@@ -151,17 +151,17 @@ pipeline {
                     }
                     env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
                 }
-                script {
-                    def services = env.SERVICES_TO_DEPLOY.split(' ')
-                    for (service in services) {
-                        sh """
-                        helm upgrade --install ${service} ./services/${service}/deployment \
-                          --set image.repository=${DOCKER_REGISTRY}/${service} \
-                          --set image.tag=${BUILD_NUMBER} \
-                          --kubeconfig=$KUBE_CONFIG
-                        """
-                    }
-                }
+                // script {
+                //     def services = env.SERVICES_TO_DEPLOY.split(' ')
+                //     for (service in services) {
+                //         sh """
+                //         helm upgrade --install ${service} ./services/${service}/deployment \
+                //           --set image.repository=${DOCKER_REGISTRY}/${service} \
+                //           --set image.tag=${BUILD_NUMBER} \
+                //           --kubeconfig=$KUBE_CONFIG
+                //         """
+                //     }
+                // }
             }
         }
     }
