@@ -14,7 +14,6 @@ type (
 	}
 )
 
-// test
 func NewAuthGrpcHandler(authUsecase authUsecase.AuthUsecaseService) *authGrpcHandler {
 	return &authGrpcHandler{
 		authUsecase: authUsecase,
