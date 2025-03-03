@@ -82,7 +82,7 @@ pipeline {
                     // sh '''
                     // docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
                     // '''
-                    withCredentials([usernamePassword(credentialsId: JenkinsCredential, usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
                         sh "echo $HARBOR_PASS | docker login $HARBOR_REGISTRY -u $HARBOR_USER --password-stdin"
                         sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
                         sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
