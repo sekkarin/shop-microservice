@@ -5,10 +5,14 @@ pipeline {
         GOLANG_IMAGE = 'golang:1.23'
         TRIVY_IMAGE = 'aquasec/trivy:0.59.1'
 
-        IMAGE_NAME = 'sekkarindev/shop-microservice'
+        IMAGE_NAME = 'shop-microservice'
         TARGET_URL = 'http://localhost:3000'  // URL of the app you want to scan
         ZAP_PORT = '80'  // Port that ZAP will use
         ZAP_WAIT_TIME = '30'  // Wait for ZAP container to initialize
+
+        HARBOR_REGISTRY = '192.168.60.53'
+        HARBOR_PROJECT =  'shop-microservices'
+        NAME_IMAGE_WITH_REGISTY = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}"
     }
 
     stages {
@@ -69,31 +73,31 @@ pipeline {
         //         }
         //     }
         // }
-        // stage('Build & Container Security Scan') {
-        //     steps {
-        //         script {
-        //             sh '''
-        //              docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:$BUILD_NUMBER -f ./Dockerfile .
-        //             '''
-        //             sh '''
-        //             docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${IMAGE_NAME}:$BUILD_NUMBER
-        //             '''
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             publishHTML([
-        //                 allowMissing: false,
-        //                 alwaysLinkToLastBuild: false,
-        //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-        //                 reportFiles: 'CSS-report.html',
-        //                 reportName: 'HTML Report CSS',
-        //                 reportTitles: '',
-        //                 useWrapperFileDirectly: true
-        //             ])
-        //         }
-        //     }
-        // }
+        stage('Build & Container Security Scan') {
+            steps {
+                script {
+                    sh '''
+                     docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
+                    '''
+                    sh '''
+                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${IMAGE_NAME}:$BUILD_NUMBER
+                    '''
+                }
+            }
+            post {
+                success {
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+                        reportFiles: 'CSS-report.html',
+                        reportName: 'HTML Report CSS',
+                        reportTitles: '',
+                        useWrapperFileDirectly: true
+                    ])
+                }
+            }
+        }
         // stage('DAST - Web Security Scan') {
         //     steps {
         //         script {
@@ -128,41 +132,41 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
-                    def servicesToDeploy = []
-                    echo "Changed Files:\n${changes}"
-                    if (changes.contains('modules/auth/')) {
-                        servicesToDeploy << 'auth-service'
-                    }
-                    if (changes.contains('modules/inventory/')) {
-                        servicesToDeploy << 'inventory-service'
-                    }
-                    if (changes.contains('modules/item/')) {
-                        servicesToDeploy << 'item-service'
-                    }
-                    if (changes.contains('modules/payment/')) {
-                        servicesToDeploy << 'payment-service'
-                    }
-                    if (changes.contains('modules/player/')) {
-                        servicesToDeploy << 'player-service'
-                    }
-                    env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
-                }
-                // script {
-                //     def services = env.SERVICES_TO_DEPLOY.split(' ')
-                //     for (service in services) {
-                //         sh """
-                //         helm upgrade --install ${service} ./services/${service}/deployment \
-                //           --set image.repository=${DOCKER_REGISTRY}/${service} \
-                //           --set image.tag=${BUILD_NUMBER} \
-                //           --kubeconfig=$KUBE_CONFIG
-                //         """
-                //     }
-                // }
-            }
-        }
+        // stage('Deploy to Kubernetes') {
+        //     steps {
+        //         script {
+        //             def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
+        //             def servicesToDeploy = []
+        //             echo "Changed Files:\n${changes}"
+        //             if (changes.contains('modules/auth/') || changes.contains('server/auth.go')) {
+        //                 servicesToDeploy << 'auth-service'
+        //             }
+        //             if (changes.contains('modules/inventory/') || changes.contains('server/inventory.go')) {
+        //                 servicesToDeploy << 'inventory-service'
+        //             }
+        //             if (changes.contains('modules/item/') || changes.contains('server/item.go')) {
+        //                 servicesToDeploy << 'item-service'
+        //             }
+        //             if (changes.contains('modules/payment/') || changes.contains('server/payment.go')) {
+        //                 servicesToDeploy << 'payment-service'
+        //             }
+        //             if (changes.contains('modules/player/') || changes.contains('server/player.go')) {
+        //                 servicesToDeploy << 'player-service'
+        //             }
+        //             env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
+        //         }
+        //         // script {
+        //         //     def services = env.SERVICES_TO_DEPLOY.split(' ')
+        //         //     for (service in services) {
+        //         //         sh """
+        //         //         helm upgrade --install ${service} ./services/${service}/deployment \
+        //         //           --set image.repository=${DOCKER_REGISTRY}/${service} \
+        //         //           --set image.tag=${BUILD_NUMBER} \
+        //         //           --kubeconfig=$KUBE_CONFIG
+        //         //         """
+        //         //     }
+        //         // }
+        //     }
+        // }
     }
 }
