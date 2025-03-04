@@ -1,0 +1,16 @@
+# unclassified:
+#   hashicorpVault:
+#     configuration:
+#       vaultCredentialId: "vault-jenkins"
+#       vaultUrl: "https://vault.company.io"
+
+# credentials:
+#   system:
+#     domainCredentials:
+#       - credentials:
+#           - VaultAppRoleCredential:
+#               description: "vault jenkins credential"
+#               id: "vault-jenkins"
+#               scope: GLOBAL
+#               role_id: b38e2935-f6bc-2047-7939-448b9921bcbc
+              
