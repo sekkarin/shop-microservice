@@ -158,7 +158,7 @@ pipeline {
                                 hashicorp/vault:1.18 \
                                 -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
                         '''
-                        sh 'docker stop vault-agent && docker rm vault-agent'
+                        sh 'docker stop vault-agent'
                     }
                 }
             }
