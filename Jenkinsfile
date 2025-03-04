@@ -146,14 +146,6 @@ pipeline {
                     withCredentials([
                         file(credentialsId: 'VAULT_PROD_ENV_SECRET_ID', variable: 'SECRET_ID')
                     ]) {
-                        def subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
-                        // Wait until we have exactly 5 subdirectories (secrets-prod has 6 directories, including the base folder)
-                        while (subdirectoryCount <= 6) {
-                            echo "Waiting for exactly 5 subdirectories in ${SECRETS_DIR}..."
-                            sleep(time: 5, unit: 'SECONDS')
-                            subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
-                        }
-                        echo "Found 5 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
                         sh 'mv $SECRET_ID ./vault-config/'
                         sh '''
                             docker run -d --rm \
@@ -167,11 +159,14 @@ pipeline {
                                 hashicorp/vault:1.18 \
                                 -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
                         '''
-                        while (countSubdirectories("${SECRETS_DIR}") != 5) {  // 4 subdirectories + 1 for the main folder
-                            echo "Waiting for exactly 4 subdirectories in ${SECRETS_DIR}..."
+                        def subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
+                        // Wait until we have exactly 5 subdirectories (secrets-prod has 6 directories, including the base folder)
+                        while (subdirectoryCount <= 6) {
+                            echo "Waiting for exactly 5 subdirectories in ${SECRETS_DIR}..."
                             sleep(time: 5, unit: 'SECONDS')
+                            subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
                         }
-                        echo "Found 4 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
+                        echo "Found 5 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
                     }
                 }
             }
