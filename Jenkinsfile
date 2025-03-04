@@ -143,7 +143,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([
-                        file(credentialsId: 'VAULT_PROD_ENV_SCRET_ID', variable: 'SECRET_ID')
+                        file(credentialsId: 'VAULT_PROD_ENV_SECRET_ID', variable: 'SECRET_ID')
                     ]) {
                         sh 'mv $SECRET_ID ./vault-config/'
                         sh '''
