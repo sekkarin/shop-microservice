@@ -73,78 +73,88 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Build & Container Security Scan') {
-            steps {
-                script {
-                    sh '''
-                     docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
-                    '''
-                    sh '''
-                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
-                    '''
-                }
-            }
-            post {
-                success {
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-                        reportFiles: 'CSS-report.html',
-                        reportName: 'HTML Report CSS',
-                        reportTitles: '',
-                        useWrapperFileDirectly: true
-                    ])
-                }
-            }
-        }
-        stage('DAST - Web Security Scan') {
+        // stage('Build & Container Security Scan') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //              docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
+        //             '''
+        //             sh '''
+        //             docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
+        //             '''
+        //         }
+        //     }
+        //     post {
+        //         success {
+        //             publishHTML([
+        //                 allowMissing: false,
+        //                 alwaysLinkToLastBuild: false,
+        //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+        //                 reportFiles: 'CSS-report.html',
+        //                 reportName: 'HTML Report CSS',
+        //                 reportTitles: '',
+        //                 useWrapperFileDirectly: true
+        //             ])
+        //         }
+        //     }
+        // }
+        // stage('DAST - Web Security Scan') {
+        //     steps {
+        //         script {
+        //             withCredentials([
+        //                 file(credentialsId: 'VAULT_SECRET_ID', variable: 'SECRET_ID'),
+        //                 file(credentialsId: 'VAULT_SECRET_TOKEN', variable: 'SECRET_TOKEN')
+        //             ]) {
+        //                 sh 'mv $SECRET_ID ./vault-agent-config/'
+        //                 sh 'mv $SECRET_TOKEN ./vault-agent-config/'
+        //                 sh 'docker compose -f compose.yaml up -d --build'
+        //             // sh '''
+        //             //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
+        //             // '''
+        //             }
+        //             withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+        //                 sh "docker login $HARBOR_REGISTRY -u $HARBOR_USER -p $HARBOR_PASS"
+        //                 sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
+        //                 sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
+        //             }
+        //         }
+        //     }
+        //     post {
+        //         always {
+        //             sh 'docker compose -f compose.yaml down'
+        //             sh 'rm -r ./vault-agent-config'
+        //             sh "docker rmi $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
+        //             sh "docker rmi $NAME_IMAGE_WITH_REGISTY:latest"
+        //         }
+        //         success {
+        //             publishHTML([
+        //                 allowMissing: false,
+        //                 alwaysLinkToLastBuild: false,
+        //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+        //                 reportFiles: 'report-api.html',
+        //                 reportName: 'HTML Report',
+        //                 reportTitles: '',
+        //                 useWrapperFileDirectly: true
+        //             ])
+        //         }
+        //     }
+        // }
+        stage('Push Helm Chart') {
             steps {
                 script {
                     withCredentials([
-                        file(credentialsId: 'VAULT_SECRET_ID', variable: 'SECRET_ID'),
-                        file(credentialsId: 'VAULT_SECRET_TOKEN', variable: 'SECRET_TOKEN')
+                        file(credentialsId: 'VAULT_PROD_ENV_SCRET_ID', variable: 'SECRET_ID')
                     ]) {
-                        sh 'mv $SECRET_ID ./vault-agent-config/'
-                        sh 'mv $SECRET_TOKEN ./vault-agent-config/'
-                        sh 'docker compose -f compose.yaml up -d --build'
-                    // sh '''
-                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
-                    // '''
+                        sh 'mv $SECRET_ID ./vault-config/'
+                        sh '''
+                            docker run -d \
+                                --name vault-agent-project \
+                                -v ${WORKSPACE}/vault-config:/etc/vault \
+                                -v ./secrets-prod:/vault/secrets \
+                                -e VAULT_ADDR=http://192.168.60.50:8200 \
+                                vault:latest agent -config=/etc/vault/vault-agent.hcl
+                        '''
                     }
-                    withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-                        sh "docker login $HARBOR_REGISTRY -u $HARBOR_USER -p $HARBOR_PASS"
-                        sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
-                        sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
-                    }
-                    withVault(configuration:
-                    [disableChildPoliciesOverride: false, engineVersion: 1, timeout: 60, vaultCredentialId: 'vault-jenkins'],
-                     vaultSecrets: [[path: '/shop/data/auth-test',
-                      secretValues: [
-                        [vaultKey: 'APP_STAGE'], [vaultKey: 'APP_NAME'],
-                        [vaultKey: 'APP_URL'], [vaultKey: 'DB_URL']]]
-                        ]) {
-                      // some block
-                      }
-                }
-            }
-            post {
-                always {
-                    sh 'docker compose -f compose.yaml down'
-                    sh 'rm -r ./vault-agent-config'
-                    sh "docker rmi $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
-                    sh "docker rmi $NAME_IMAGE_WITH_REGISTY:latest"
-                }
-                success {
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-                        reportFiles: 'report-api.html',
-                        reportName: 'HTML Report',
-                        reportTitles: '',
-                        useWrapperFileDirectly: true
-                    ])
                 }
             }
         }
