@@ -13,7 +13,7 @@ pipeline {
         HARBOR_REGISTRY = '192.168.60.53'
         HARBOR_PROJECT =  'shop-microservices'
         NAME_IMAGE_WITH_REGISTY = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}"
-        SECRETS_DIR = './secrets-prod'
+        SECRETS_DIR = '${WORKSPACE}/secrets-prod'
     }
 
     stages {
@@ -163,7 +163,7 @@ pipeline {
                                 hashicorp/vault:1.18 \
                                 -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
                         '''
-                        while (countSubdirectories("${SECRETS_DIR}") != 4) {  // 4 subdirectories + 1 for the main folder
+                        while (countSubdirectories("${SECRETS_DIR}") != 5) {  // 4 subdirectories + 1 for the main folder
                             echo "Waiting for exactly 4 subdirectories in ${SECRETS_DIR}..."
                             sleep(time: 5, unit: 'SECONDS')
                         }
