@@ -13,7 +13,7 @@ pipeline {
         HARBOR_REGISTRY = '192.168.60.53'
         HARBOR_PROJECT =  'shop-microservices'
         NAME_IMAGE_WITH_REGISTY = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}"
-        SECRETS_DIR = '${WORKSPACE}/secrets-prod'
+        SECRETS_DIR = './secrets-prod'
     }
 
     stages {
