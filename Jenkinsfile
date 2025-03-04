@@ -147,7 +147,7 @@ pipeline {
                     ]) {
                         sh 'mv $SECRET_ID ./vault-config/'
                         sh '''
-                            docker run -d \
+                            docker run --rm \
                                 --name vault-agent \
                                 --entrypoint /bin/sh \
                                 -e VAULT_ADDR=http://192.168.60.50:8200 \
