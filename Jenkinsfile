@@ -146,6 +146,10 @@ pipeline {
                     withCredentials([
                         file(credentialsId: 'VAULT_PROD_ENV_SECRET_ID', variable: 'SECRET_ID')
                     ]) {
+                        def countSubdirectories = { dir ->
+                            def count = sh(script: "find ${dir} -maxdepth 1 -type d | wc -l", returnStdout: true).trim()
+                            return count.toInteger()
+                        }
                         sh 'mv $SECRET_ID ./vault-config/'
                         sh '''
                             docker run -d --rm \
