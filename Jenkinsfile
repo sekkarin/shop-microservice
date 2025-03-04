@@ -148,11 +148,15 @@ pipeline {
                         sh 'mv $SECRET_ID ./vault-config/'
                         sh '''
                             docker run -d \
-                                --name vault-agent-project \
-                                -v ${WORKSPACE}/vault-config:/etc/vault \
-                                -v ./secrets-prod:/vault/secrets \
+                                --name vault-agent \
+                                --entrypoint /bin/sh \
                                 -e VAULT_ADDR=http://192.168.60.50:8200 \
-                                hashicorp/vault:1.18 agent -config=/etc/vault/vault-agent.hcl
+                                -v ./vault-config:/etc/vault:rw \
+                                -v ./secrets-prod:/vault/secrets:rw \
+                                --cap-add IPC_LOCK \
+                                --privileged \
+                                hashicorp/vault:1.18 \
+                                -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
                         '''
                     }
                 }
