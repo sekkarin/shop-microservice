@@ -152,7 +152,7 @@ pipeline {
                                 -v ${WORKSPACE}/vault-config:/etc/vault \
                                 -v ./secrets-prod:/vault/secrets \
                                 -e VAULT_ADDR=http://192.168.60.50:8200 \
-                                vault:latest agent -config=/etc/vault/vault-agent.hcl
+                                hashicorp/vault:1.18 agent -config=/etc/vault/vault-agent.hcl
                         '''
                     }
                 }
