@@ -147,10 +147,10 @@ pipeline {
                         file(credentialsId: 'VAULT_PROD_ENV_SECRET_ID', variable: 'SECRET_ID')
                     ]) {
                         sh 'mv $SECRET_ID ./vault-config/'
+                        sh 'mkdir secrets-prod'
                         sh '''
                             docker run -d --rm \
                                 --name vault-agent \
-                                -u jenkins \
                                 --entrypoint /bin/sh \
                                 -e VAULT_ADDR=http://192.168.60.50:8200 \
                                 -v ./vault-config:/etc/vault:rw \
@@ -161,11 +161,9 @@ pipeline {
                                 -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
                         '''
                         def subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
-                        // Wait until we have exactly 5 subdirectories (secrets-prod has 6 directories, including the base folder)
                         while (subdirectoryCount < 6) {
                             echo "Waiting for exactly 5 subdirectories in ${SECRETS_DIR}..."
                             sleep(time: 5, unit: 'SECONDS')
-                            subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
                         }
                         echo "Found 5 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
                     }
