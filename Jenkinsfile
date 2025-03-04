@@ -147,7 +147,7 @@ pipeline {
                     ]) {
                         sh 'mv $SECRET_ID ./vault-config/'
                         sh '''
-                            docker run --rm \
+                            docker run -d --rm \
                                 --name vault-agent \
                                 --entrypoint /bin/sh \
                                 -e VAULT_ADDR=http://192.168.60.50:8200 \
@@ -158,6 +158,7 @@ pipeline {
                                 hashicorp/vault:1.18 \
                                 -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl && exit"
                         '''
+                        sh 'docker stop vault-agent && docker rm vault-agent'
                     }
                 }
             }
