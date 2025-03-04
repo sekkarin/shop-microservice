@@ -146,10 +146,14 @@ pipeline {
                     withCredentials([
                         file(credentialsId: 'VAULT_PROD_ENV_SECRET_ID', variable: 'SECRET_ID')
                     ]) {
-                        def countSubdirectories = { dir ->
-                            def count = sh(script: "find ${dir} -maxdepth 1 -type d | wc -l", returnStdout: true).trim()
-                            return count.toInteger()
+                        def subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
+                        // Wait until we have exactly 5 subdirectories (secrets-prod has 6 directories, including the base folder)
+                        while (subdirectoryCount <= 6) {
+                            echo "Waiting for exactly 5 subdirectories in ${SECRETS_DIR}..."
+                            sleep(time: 5, unit: 'SECONDS')
+                            subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
                         }
+                        echo "Found 5 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
                         sh 'mv $SECRET_ID ./vault-config/'
                         sh '''
                             docker run -d --rm \
