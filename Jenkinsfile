@@ -156,7 +156,7 @@ pipeline {
                                 --cap-add IPC_LOCK \
                                 --privileged \
                                 hashicorp/vault:1.18 \
-                                -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
+                                -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl && exit"
                         '''
                     }
                 }
