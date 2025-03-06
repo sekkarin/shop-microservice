@@ -172,7 +172,7 @@ pipeline {
             }
             post {
                 always {
-                    sh 'docker stop vault-agent'
+                    // sh 'docker stop vault-agent'
                     sh 'rm -r ${SECRETS_DIR}'
                 }
             }
