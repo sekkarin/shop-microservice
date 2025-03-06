@@ -15,7 +15,7 @@ services:
     environment:
       VAULT_ADDR: http://192.168.60.50:8200
     volumes:
-      - ./vault-agent-config:/var/vault:rw
+      - ./vault-agent-config:/etc/vault:rw
       - ./secrets:/vault/secrets/
     cap_add:
       - IPC_LOCK

@@ -160,12 +160,13 @@ pipeline {
                                 hashicorp/vault:1.18 \
                                 -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
                         '''
-                        def subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
+                        def subdirectoryCount = 0
                         while (subdirectoryCount < 6) {
-                            echo "Waiting for exactly 5 subdirectories in ${SECRETS_DIR}..."
+                            subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
+                            echo "Waiting for exactly 6 subdirectories in ${SECRETS_DIR}... (Current count: ${subdirectoryCount})"
                             sleep(time: 5, unit: 'SECONDS')
                         }
-                        echo "Found 5 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
+                        echo "Found 6 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
                     }
                 }
             }
