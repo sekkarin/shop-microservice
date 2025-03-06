@@ -182,12 +182,12 @@ pipeline {
                     }
                 }
             }
-            // post {
-            //     always {
-            //         // sh 'docker stop vault-agent'
-            //         // sh 'rm -r ${SECRETS_DIR}'
-            //     }
-            // }
+            post {
+                always {
+                    sh 'docker stop vault-agent'
+                    // sh 'rm -r ${SECRETS_DIR}'
+                }
+            }
         }
     // stage('Deploy to Kubernetes') {
     //     steps {
