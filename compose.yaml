@@ -11,17 +11,16 @@ services:
   vault-agent:
     image: hashicorp/vault:1.18
     container_name: vault-agent
-    # entrypoint:  /bin/sh -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
-    command: [ "agent", "-config=/etc/vault/vault-agent.hcl" ]
     environment:
       VAULT_ADDR: http://192.168.60.50:8200
     volumes:
-      - ./vault-agent-config:/etc/vault:rw
+      - ./vault-agent-config:/var/vault:rw
       - ./secrets:/vault/secrets/
     cap_add:
       - IPC_LOCK
     privileged: true
     restart: unless-stopped
+    command: [ "agent", "-config=/var/vault/vault-agent.hcl" ]
 
   shop-auth:
     build:
