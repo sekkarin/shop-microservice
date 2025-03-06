@@ -147,7 +147,11 @@ pipeline {
                         file(credentialsId: 'VAULT_PROD_ENV_SECRET_ID', variable: 'SECRET_ID')
                     ]) {
                         sh 'mv $SECRET_ID ./vault-config/'
-                        sh 'mkdir secrets-prod'
+                        sh '''
+                        if [ ! -d "secrets-prod" ]; then
+                            mkdir secrets-prod
+                        fi
+                        '''
                         sh '''
                             docker run -d --rm \
                                 --name vault-agent \
