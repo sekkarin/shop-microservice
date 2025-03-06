@@ -21,7 +21,6 @@ services:
       - IPC_LOCK
     privileged: true
     restart: unless-stopped
-    command: [ "agent", "-config=/var/vault/vault-agent.hcl" ]
 
   shop-auth:
     build:
