@@ -74,31 +74,31 @@ pipeline {
         //         }
         //     }
         // }
-        // stage('Build & Container Security Scan') {
-        //     steps {
-        //         script {
-        //             sh '''
-        //              docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
-        //             '''
-        //             sh '''
-        //             docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
-        //             '''
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             publishHTML([
-        //                 allowMissing: false,
-        //                 alwaysLinkToLastBuild: false,
-        //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-        //                 reportFiles: 'CSS-report.html',
-        //                 reportName: 'HTML Report CSS',
-        //                 reportTitles: '',
-        //                 useWrapperFileDirectly: true
-        //             ])
-        //         }
-        //     }
-        // }
+        stage('Build & Container Security Scan') {
+            steps {
+                script {
+                    sh '''
+                     docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
+                    '''
+                    sh '''
+                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
+                    '''
+                }
+            }
+            post {
+                success {
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+                        reportFiles: 'CSS-report.html',
+                        reportName: 'HTML Report CSS',
+                        reportTitles: '',
+                        useWrapperFileDirectly: true
+                    ])
+                }
+            }
+        }
         stage('DAST - Web Security Scan') {
             steps {
                 script {
