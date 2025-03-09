@@ -164,7 +164,7 @@ pipeline {
                         fi
                         '''
                         sh '''
-                            docker run -d --rm \
+                            docker run --user jenkins -d --rm \
                                 --name vault-agent \
                                 --entrypoint /bin/sh \
                                 -e VAULT_ADDR=http://192.168.60.50:8200 \
