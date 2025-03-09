@@ -24,7 +24,7 @@ auto_auth {
 
 template {
   source      = "/etc/vault/auth-template"
-  destination = "/vault/secrets/auth-prod/.env"
+  destination = "/vault/secrets/auth-prod/secret.yaml"
 }
 template {
   source      = "/etc/vault/inventory-template"
