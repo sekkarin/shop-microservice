@@ -14,6 +14,9 @@ pipeline {
         HARBOR_PROJECT =  'shop-microservices'
         NAME_IMAGE_WITH_REGISTY = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}"
         SECRETS_DIR = './secrets-prod'
+
+        CHART_NAME = 'auth-service'           // Change to your Helm chart name
+        CHART_VERSION = "1.0.${BUILD_NUMBER}"
     }
 
     stages {
@@ -112,16 +115,16 @@ pipeline {
                         sh '''
                             docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
                         '''
-                        // sh '''
-                        //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/refresh-token -f openapi -I -r report-api.html
-                        // '''
-                        // sh '''
-                        //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/logout -f openapi -I -r report-api.html
-                        // '''
-                        // sh '''
-                        //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1 -f openapi -I -r report-api.html
-                        // '''
-                        }
+                    // sh '''
+                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/refresh-token -f openapi -I -r report-api.html
+                    // '''
+                    // sh '''
+                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/logout -f openapi -I -r report-api.html
+                    // '''
+                    // sh '''
+                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1 -f openapi -I -r report-api.html
+                    // '''
+                    }
                     withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
                         sh "docker login $HARBOR_REGISTRY -u $HARBOR_USER -p $HARBOR_PASS"
                         sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
@@ -179,13 +182,22 @@ pipeline {
                             sleep(time: 5, unit: 'SECONDS')
                         }
                         echo "Found 6 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
+                        sh 'mv ./secrets-prod/auth-prod/secret.yaml ./charts/auth/auth-service/templates/'
+
+                        withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                            sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASSWORD}"
+                            sh "helm dependency update ./charts/auth/${CHART_NAME}"
+                            sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION}"
+
+                             sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_URL}/${HARBOR_PROJECT}"
+                        }
                     }
                 }
             }
             post {
                 always {
                     sh 'docker stop vault-agent'
-                    // sh 'rm -r ${SECRETS_DIR}'
+                // sh 'rm -r ${SECRETS_DIR}'
                 }
             }
         }
