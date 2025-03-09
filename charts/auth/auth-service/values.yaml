@@ -104,17 +104,17 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
-volumes: 
+volumes: {} 
 - name: env-volume
   secret:
-    secretName: {{ .Release.Name }}-env
+    secretName: auth-env
     optional: false
     items:
       - key: ".env"
         path: ".env"
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: 
+volumeMounts: {}
 - name: env-volume
   mountPath: "/etc/env"
   subPath: ".env"
