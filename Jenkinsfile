@@ -185,7 +185,7 @@ pipeline {
                         // sh 'mv ./secrets-prod/auth-prod/ ./charts/auth/auth-service/templates/'
 
                         withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-                            sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASSWORD}"
+                            sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
                             sh "helm dependency update ./charts/auth/${CHART_NAME}"
                             sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION} -f ./secrets-prod/auth-prod/secrets.yaml"
 
