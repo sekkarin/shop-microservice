@@ -165,7 +165,7 @@ pipeline {
                         '''
                         sh '''
                             docker run -d --rm \
-                                --name vault-agent --user jenkins  \
+                                --name vault-agent \
                                 --entrypoint /bin/sh \
                                 -e VAULT_ADDR=http://192.168.60.50:8200 \
                                 -v ./vault-config:/etc/vault:rw \
@@ -189,7 +189,7 @@ pipeline {
                             sh "helm dependency update ./charts/auth/${CHART_NAME}"
                             sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION}"
 
-                             sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_URL}/${HARBOR_PROJECT}"
+                            sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_URL}/${HARBOR_PROJECT}"
                         }
                     }
                 }
