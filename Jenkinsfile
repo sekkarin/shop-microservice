@@ -182,12 +182,12 @@ pipeline {
                             sleep(time: 5, unit: 'SECONDS')
                         }
                         echo "Found 6 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
-                        sh 'mv ./secrets-prod/auth-prod/ ./charts/auth/auth-service/templates/'
+                        // sh 'mv ./secrets-prod/auth-prod/ ./charts/auth/auth-service/templates/'
 
                         withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
                             sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASSWORD}"
                             sh "helm dependency update ./charts/auth/${CHART_NAME}"
-                            sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION}"
+                            sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION} -f ./secrets-prod/auth-prod/secrets.yaml"
 
                             sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_URL}/${HARBOR_PROJECT}"
                         }
