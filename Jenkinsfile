@@ -189,7 +189,7 @@ pipeline {
                             sh "helm dependency update ./charts/auth/${CHART_NAME}/"
                             sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION} "
 
-                            sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_URL}/${HARBOR_PROJECT}"
+                            sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
                         }
                     }
                 }
