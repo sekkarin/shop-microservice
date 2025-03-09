@@ -182,7 +182,7 @@ pipeline {
                             sleep(time: 5, unit: 'SECONDS')
                         }
                         echo "Found 6 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
-                        // sh 'mv ./secrets-prod/auth-prod/ ./charts/auth/auth-service/templates/'
+                        sh 'cp ./secrets-prod/auth-prod/ ./charts/auth/auth-service/templates/'
 
                         withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
                             sh "echo $HARBOR_PASS | helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password-stdin --insecure"
