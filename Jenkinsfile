@@ -187,7 +187,7 @@ pipeline {
                         withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
                             sh "echo $HARBOR_PASS | helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password-stdin --insecure"
                             sh "helm dependency update ./charts/auth/${CHART_NAME}/"
-                            sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION} "
+                            sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION} -e "
 
                             sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT} --plain-http"
                         }
