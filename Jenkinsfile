@@ -10,7 +10,7 @@ pipeline {
         ZAP_PORT = '80'  // Port that ZAP will use
         ZAP_WAIT_TIME = '30'  // Wait for ZAP container to initialize
 
-        HARBOR_REGISTRY = '192.168.60.53'
+        HARBOR_REGISTRY = 'harbor.warering.online'
         HARBOR_PROJECT =  'shop-microservices'
         NAME_IMAGE_WITH_REGISTY = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}"
         SECRETS_DIR = './secrets-prod'
