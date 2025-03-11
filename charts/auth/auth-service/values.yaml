@@ -107,20 +107,20 @@ autoscaling:
 
 # Additional volumes on the output Deployment definition.
 volumes: 
-- name: env-volume
-  secret:
-    secretName: auth-env
-    optional: false
-    items:
-      - key: ".env"
-        path: ".env"
+  - name: env-volume
+    secret:
+      secretName: auth-env
+      optional: false
+      items:
+        - key: ".env"
+          path: ".env"
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts: 
-- name: env-volume
-  mountPath: "/etc/env"
-  subPath: ".env"
-  readOnly: true
+  - name: env-volume
+    mountPath: "/etc/env/.env"
+    subPath: ".env"
+    readOnly: true
 
 nodeSelector: {}
 

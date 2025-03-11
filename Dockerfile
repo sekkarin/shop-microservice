@@ -68,11 +68,10 @@ RUN adduser \
     appuser
 USER appuser
 
-# Copy the executable from the "build" stage.
-# COPY --from=build /bin/server /bin/
+    # Copy the executable from the "build" stage.
+    COPY --from=build /bin/server /bin/
 
-# Expose the port that the application listens on.
-# EXPOSE 3000
-    
-# What the container should run when it is started.
-# ENTRYPOINT [ "/bin/server","/etc/env/.env" ]
+    # Expose the port that the application listens on.
+    EXPOSE 3000
+    # What the container should run when it is started.
+    ENTRYPOINT [ "/bin/server","/etc/env/.env" ]
