@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cluster-addons
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/sekkarin/shop-microservice.git
+        revision: HEAD
+        files:
+          - path: "applicationset/examples/cluster-config/**/config.json"
+  template:
+    metadata:
+      name: '{{ .basename }}'  # Fixed syntax
+    spec:
+      project: default
+      source:
+        repoURL: "{{ .repoURL }}"  # Corrected variable reference
+        chart: "{{ .chart }}"
+        targetRevision: "{{ .version }}"  # Dynamically fetches the latest version
+        helm:
+          valueFiles:
+            - values.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ .namespace }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
