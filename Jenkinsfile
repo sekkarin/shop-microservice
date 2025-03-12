@@ -25,7 +25,7 @@ pipeline {
     stages {
         stage('Fetch Code') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sekkarin/shop-microservice.git']])
+                checkout scmGit(branches: [[name: '*/main']], credentialsId: 'github-ssh', extensions: [], userRemoteConfigs: [[url: 'https://github.com/sekkarin/shop-microservice.git']])
                 script {
                     def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
                     def servicesToDeploy = []
@@ -248,19 +248,6 @@ pipeline {
                                         git commit -m "Updated ${service}-service version to ${CHART_VERSION}"
                                         git push main
                                     """
-
-                            // git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservice.git'
-                            // sh 'ls -la'
-                            // echo "Updated config.json with version: ${CHART_VERSION}"
-                            // sshagent(['github-ssh']) {  // Use Jenkins SSH credentials
-                            //     sh """
-                            //         git config --global user.email "jenkins@gmail.com"
-                            //         git config --global user.name "Jenkins CI"
-                            //         git add applicationset/*
-                            //         git commit -m "Updated inventory-service version to ${CHART_VERSION}"
-                            //         git push
-                            //     """
-                            // }
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
                                 }
