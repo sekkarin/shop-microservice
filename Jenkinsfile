@@ -228,14 +228,7 @@ pipeline {
                                                 sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
                                                 sh "helm push ${service}-service-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
                                             }
-                                            // def jsonFile = readFile("applicationset/cluster-config/${service}-service/config.json")
-                                            // def json = readJSON(text: jsonFile)
-                                            // git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservice.git'
-                                            cm: scmGit(userRemoteConfigs: [
-                                                [ credentialsId: 'github-ssh',
-                                                url: 'git@github.com:sekkarin/shop-microservices-argocd.git',
-                                                branch: 'main' ]
-                                            ])
+
                                             def json = readJSON file: "applicationset/cluster-config/${service}-service/config.json"
 
                                             // Update the version field
@@ -244,19 +237,17 @@ pipeline {
                                             writeJSON file: "applicationset/cluster-config/${service}-service/config.json", json: json
                                             // writeJSON(file: "applicationset/cluster-config/${service}-service/config.json", json: json, pretty: 4)
                                             sh "cat applicationset/cluster-config/${service}-service/config.json"
-                                            sh """
-                                                git reset --hard HEAD
-                                                git clean -fd
-                                                git checkout main
-                                                git pull origin main  # Get latest changes
-                                                git config --global user.email "jenkins@gmail.com"
-                                                git config --global user.name "Jenkins CI"
-                                                git add applicationset/*
-                                                git commit -m "Updated ${service}-service version to ${CHART_VERSION}"
-                                                git push main
-                                            """
                                         }
                                     }
+                                    sh """
+                                        git checkout main
+                                        git pull origin main  # Get latest changes
+                                        git config --global user.email "jenkins@gmail.com"
+                                        git config --global user.name "Jenkins CI"
+                                        git add .
+                                        git commit -m "Updated ${service}-service version to ${CHART_VERSION}"
+                                        git push main
+                                    """
 
                             // git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservice.git'
                             // sh 'ls -la'
