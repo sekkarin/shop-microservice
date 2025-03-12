@@ -1,7 +1,7 @@
 {
   "cluster": {
     "basename": "auth.service",
-    "repoURL": "oci://harbor.warering.online/shop-microservices",
+    "repoURL": "harbor.warering.online/shop-microservices",
     "chart": "auth-service",
     "version": "1.0.250",
     "namespace": "auth"
