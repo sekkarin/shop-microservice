@@ -6,7 +6,7 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: https://github.com/sekkarin/shop-microservice.git
+        repoURL: https://github.com/sekkarin/shop-microservices-argocd.git
         revision: HEAD
         files:
           - path: "applicationset/cluster-config/**/config.json"

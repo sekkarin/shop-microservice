@@ -18,6 +18,8 @@ pipeline {
 
         CHART_NAME = 'auth-service'           // Change to your Helm chart name
         CHART_VERSION = "1.0.${BUILD_NUMBER}"
+
+        GIT_CREDENTIALS_ID = 'github-ssh'
     }
 
     stages {
@@ -216,6 +218,7 @@ pipeline {
                             script {
                                 if (env.SERVICES_TO_DEPLOY?.trim()) {  // Check if SERVICES_TO_DEPLOY is not empty
                                     def services = env.SERVICES_TO_DEPLOY.split(' ')
+                                    git branch: "main", credentialsId: "${GIT_CREDENTIALS_ID}", url: "git@github.com:sekkarin/shop-microservices-argocd.git"
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
                                             withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
@@ -225,7 +228,26 @@ pipeline {
                                                 sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
                                                 sh "helm push ${service}-service-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
                                             }
+                                            def jsonFile = readFile("applicationset/cluster-config/${service}-service/config.json")
+                                            def json = readJSON(text: jsonFile)
+
+                                            // Update the version field
+                                            json.cluster.version = "${CHART_VERSION}"
+
+                                            // Write updated JSON back to file
+                                            writeJSON(file: "applicationset/cluster-config/${service}-service/config.json", json: json, pretty: 4)
                                         }
+                                    }
+
+                                    echo "Updated config.json with version: ${CHART_VERSION}"
+                                    sshagent(['GitHubSSH']) {  // Use Jenkins SSH credentials
+                                        sh """
+                                            git config --global user.email "jenkins@gmail.com"
+                                            git config --global user.name "Jenkins CI"
+                                            git add .
+                                            git commit -m "Updated inventory-service version to ${CHART_VERSION}"
+                                            git push origin main
+                                        """
                                     }
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
