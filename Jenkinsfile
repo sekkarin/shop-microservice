@@ -240,7 +240,7 @@ pipeline {
                                         }
                                     }
                                     sh """
-                                        git pull origin main  # Get latest changes
+                                        git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # Ensure SSH URL
                                         git config --global user.email "jenkins@gmail.com"
                                         git config --global user.name "Jenkins CI"
                                         git add applicationset/*
