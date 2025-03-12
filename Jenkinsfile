@@ -201,6 +201,7 @@ pipeline {
                         }
                         echo "Found 6 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
                         script {
+                            echo "$env.SERVICES_TO_DEPLOY"
                             if (env.SERVICES_TO_DEPLOY?.trim()) {  // Check if SERVICES_TO_DEPLOY is not empty
                                 def services = env.SERVICES_TO_DEPLOY.split(' ')
                                 for (service in services) {
