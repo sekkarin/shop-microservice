@@ -8,23 +8,23 @@ spec:
     - git:
         repoURL: https://github.com/sekkarin/shop-microservice.git
         revision: HEAD
-        directories:
+        files:
           - path: "applicationset/cluster-config/auth-service/config.json"
   template:
     metadata:
-      name: '{{ .basename }}'  # Fixed syntax
+      name: '{{ .basename | replace "." "-" }}'  # Converts dots to dashes
     spec:
-      project: "{{ .namespace }}"
+      project: "default"
       source:
-        repoURL: "{{ .repoURL }}"  # Corrected variable reference
+        repoURL: "https://{{ .repoURL }}"
         chart: "{{ .chart }}"
-        targetRevision: "{{ .version }}"  # Dynamically fetches the latest version
+        targetRevision: "{{ .version }}"
         helm:
           valueFiles:
             - values.yaml
       destination:
         server: https://kubernetes.default.svc
-        namespace: default
+        namespace: "{{ .namespace }}"
       syncPolicy:
         automated:
           prune: true
