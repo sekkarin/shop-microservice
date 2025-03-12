@@ -230,6 +230,12 @@ pipeline {
                                             }
                                             // def jsonFile = readFile("applicationset/cluster-config/${service}-service/config.json")
                                             // def json = readJSON(text: jsonFile)
+                                            // git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservice.git'
+                                            cm: scmGit(userRemoteConfigs: [
+                                                [ credentialsId: 'github-ssh',
+                                                url: 'git@github.com:jenkinsci/git-client-plugin.git',
+                                                branch: 'main' ]
+                                            ])
                                             def json = readJSON file: "applicationset/cluster-config/${service}-service/config.json"
 
                                             // Update the version field
@@ -237,21 +243,28 @@ pipeline {
 
                                             // Write updated JSON back to file
                                             writeJSON(file: "applicationset/cluster-config/${service}-service/config.json", json: json, pretty: 4)
+                                            sh """
+                                                git config --global user.email "jenkins@gmail.com"
+                                                git config --global user.name "Jenkins CI"
+                                                git add applicationset/*
+                                                git commit -m "Updated inventory-service version to ${CHART_VERSION}"
+                                                git push
+                                            """
                                         }
                                     }
 
-                                    git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservices-argocd.git'
-                                    sh 'ls -la'
-                                    echo "Updated config.json with version: ${CHART_VERSION}"
-                                    sshagent(['github-ssh']) {  // Use Jenkins SSH credentials
-                                        sh """
-                                            git config --global user.email "jenkins@gmail.com"
-                                            git config --global user.name "Jenkins CI"
-                                            git add applicationset/*
-                                            git commit -m "Updated inventory-service version to ${CHART_VERSION}"
-                                            git push
-                                        """
-                                    }
+                            // git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservice.git'
+                            // sh 'ls -la'
+                            // echo "Updated config.json with version: ${CHART_VERSION}"
+                            // sshagent(['github-ssh']) {  // Use Jenkins SSH credentials
+                            //     sh """
+                            //         git config --global user.email "jenkins@gmail.com"
+                            //         git config --global user.name "Jenkins CI"
+                            //         git add applicationset/*
+                            //         git commit -m "Updated inventory-service version to ${CHART_VERSION}"
+                            //         git push
+                            //     """
+                            // }
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
                                 }
