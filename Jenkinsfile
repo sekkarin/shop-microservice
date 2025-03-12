@@ -24,6 +24,27 @@ pipeline {
             steps {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sekkarin/shop-microservice.git']])
             }
+            script {
+                def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
+                def servicesToDeploy = []
+                echo "Changed Files:\n${changes}"
+                if (changes.contains('modules/auth/') || changes.contains('server/auth.go')) {
+                    servicesToDeploy << 'auth'
+                }
+                if (changes.contains('modules/inventory/') || changes.contains('server/inventory.go')) {
+                    servicesToDeploy << 'inventory'
+                }
+                if (changes.contains('modules/item/') || changes.contains('server/item.go')) {
+                    servicesToDeploy << 'item'
+                }
+                if (changes.contains('modules/payment/') || changes.contains('server/payment.go')) {
+                    servicesToDeploy << 'payment'
+                }
+                if (changes.contains('modules/player/') || changes.contains('server/player.go')) {
+                    servicesToDeploy << 'player'
+                }
+                env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
+            }
         }
         // stage('Unit Tests') {
         //     steps {
@@ -112,9 +133,9 @@ pipeline {
                         sh 'mv $SECRET_ID ./vault-agent-config/'
                         sh 'mv $SECRET_TOKEN ./vault-agent-config/'
                         sh 'docker compose -f compose.yaml up -d --build'
-                        // sh '''
-                        //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
-                        // '''
+                    // sh '''
+                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
+                    // '''
                     // sh '''
                     //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/refresh-token -f openapi -I -r report-api.html
                     // '''
@@ -182,13 +203,31 @@ pipeline {
                             sleep(time: 5, unit: 'SECONDS')
                         }
                         echo "Found 6 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
-                        sh 'cp -r ./secrets-prod/auth-prod/secret.yaml ./charts/auth/auth-service/templates/secret.yaml'
+                        // sh 'cp -r ./secrets-prod/auth-prod/secret.yaml ./charts/auth/auth-service/templates/secret.yaml'
 
-                        withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-                            sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS} "
-                            sh "helm dependency update ./charts/auth/${CHART_NAME}/"
-                            sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION}"
-                            sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
+                        // withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                        //     sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS} "
+                        //     sh "helm dependency update ./charts/auth/${CHART_NAME}/"
+                        //     sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION}"
+                        //     sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
+                        // }
+                        script {
+                            def services = env.SERVICES_TO_DEPLOY.split(' ')
+                            for (service in services) {
+                                  withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                                    sh "cp -r ./secrets-prod/${service}-prod/secret.yaml ./charts/${service}/${service}-prod-service/templates/secret.yaml"
+                                    sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
+                                    sh "helm dependency update ./charts/${HARBOR_USER}/${service}-serivce/"
+                                    sh "helm package ./charts/${service}/${service}-serivce --version ${CHART_VERSION}"
+                                    sh "helm push ${service}-serivce-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
+                                }
+                                // sh """
+                                //     helm upgrade --install ${service} ./services/${service}/deployment \
+                                //     --set image.repository=${DOCKER_REGISTRY}/${service} \
+                                //     --set image.tag=${BUILD_NUMBER} \
+                                //     --kubeconfig=$KUBE_CONFIG
+                                //     """
+                            }
                         }
                     }
                 }
