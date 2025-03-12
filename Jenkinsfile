@@ -240,7 +240,7 @@ pipeline {
                                     }
 
                                     echo "Updated config.json with version: ${CHART_VERSION}"
-                                    sshagent(['GitHubSSH']) {  // Use Jenkins SSH credentials
+                                    sshagent(['github-ssh']) {  // Use Jenkins SSH credentials
                                         sh """
                                             git config --global user.email "jenkins@gmail.com"
                                             git config --global user.name "Jenkins CI"
