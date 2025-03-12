@@ -18,8 +18,8 @@ image:
 imagePullSecrets: 
   - name: regcred
 # This is to override the chart name.
-nameOverride: auth-service
-fullnameOverride: auth-service
+nameOverride: payment-service
+fullnameOverride: payment-service
 
 #This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
