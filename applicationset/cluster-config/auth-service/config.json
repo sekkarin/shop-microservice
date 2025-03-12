@@ -1,5 +1,5 @@
 {
-  "basename": "auth.service",
+  "basename": "authservice",
   "repoURL": "harbor.warering.online/shop-microservices",
   "chart": "auth-service",
   "version": "1.0.250",
