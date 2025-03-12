@@ -218,7 +218,7 @@ pipeline {
                             script {
                                 if (env.SERVICES_TO_DEPLOY?.trim()) {  // Check if SERVICES_TO_DEPLOY is not empty
                                     def services = env.SERVICES_TO_DEPLOY.split(' ')
-                                    git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservices-argocd.git'
+
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
                                             withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
@@ -239,6 +239,8 @@ pipeline {
                                         }
                                     }
 
+                                    git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservices-argocd.git'
+                                    sh 'ls -la'
                                     echo "Updated config.json with version: ${CHART_VERSION}"
                                     sshagent(['github-ssh']) {  // Use Jenkins SSH credentials
                                         sh """
