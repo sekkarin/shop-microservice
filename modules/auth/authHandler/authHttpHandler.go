@@ -30,7 +30,7 @@ func NewAuthHttpHandler(cfg *config.Config, authUsecase authUsecase.AuthUsecaseS
 	return &authHttpHandler{cfg, authUsecase}
 }
 
-// test1
+// test2
 func (h *authHttpHandler) Login(c echo.Context) error {
 	ctx := context.Background()
 

@@ -1,3 +1,4 @@
+/* groovylint-disable LineLength */
 pipeline {
     agent any
     environment {
@@ -212,15 +213,31 @@ pipeline {
                         //     sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
                         // }
                         script {
-                            def services = env.SERVICES_TO_DEPLOY.split(' ')
-                            for (service in services) {
-                                withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-                                    sh "cp -r ./secrets-prod/${service}-prod/secret.yaml ./charts/${service}/${service}-prod-service/templates/secret.yaml"
-                                    sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
-                                    sh "helm dependency update ./charts/${HARBOR_USER}/${service}-serivce/"
-                                    sh "helm package ./charts/${service}/${service}-serivce --version ${CHART_VERSION}"
-                                    sh "helm push ${service}-serivce-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
+                            if (env.SERVICES_TO_DEPLOY?.trim()) {  // Check if SERVICES_TO_DEPLOY is not empty
+                                def services = env.SERVICES_TO_DEPLOY.split(' ')
+                                for (service in services) {
+                                    if (service.trim()) {  // Ensure no empty values
+                                        withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                                            sh "cp -r ./secrets-prod/${service}-prod/secret.yaml ./charts/${service}/${service}-service/templates/secret.yaml"
+                                            sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
+                                            sh "helm dependency update ./charts/${service}/${service}-service/"
+                                            sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
+                                            sh "helm push ${service}-service-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
+                                        }
+                                    }
                                 }
+                            } else {
+                                echo 'No services to deploy. Skipping deployment step.'
+                            }
+                            // def services = env.SERVICES_TO_DEPLOY.split(' ')
+                            // for (service in services) {
+                            //     withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                            //         sh "cp -r ./secrets-prod/${service}-prod/secret.yaml ./charts/${service}/${service}-prod-service/templates/secret.yaml"
+                            //         sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
+                            //         sh "helm dependency update ./charts/${HARBOR_USER}/${service}-serivce/"
+                            //         sh "helm package ./charts/${service}/${service}-serivce --version ${CHART_VERSION}"
+                            //         sh "helm push ${service}-serivce-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
+                            //     }
                             // sh """
                             //     helm upgrade --install ${service} ./services/${service}/deployment \
                             //     --set image.repository=${DOCKER_REGISTRY}/${service} \
