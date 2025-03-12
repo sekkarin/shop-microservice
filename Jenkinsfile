@@ -228,8 +228,9 @@ pipeline {
                                                 sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
                                                 sh "helm push ${service}-service-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
                                             }
-                                            def jsonFile = readFile("applicationset/cluster-config/${service}-service/config.json")
-                                            def json = readJSON(text: jsonFile)
+                                            // def jsonFile = readFile("applicationset/cluster-config/${service}-service/config.json")
+                                            // def json = readJSON(text: jsonFile)
+                                            def json = readJSON file: 'applicationset/cluster-config/${service}-service/config.json'
 
                                             // Update the version field
                                             json.cluster.version = "${CHART_VERSION}"
