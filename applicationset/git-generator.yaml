@@ -1,30 +1,30 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: cluster-addons
+  name: shop-microservices
   namespace: argocd
 spec:
   generators:
     - git:
         repoURL: https://github.com/sekkarin/shop-microservice.git
         revision: HEAD
-        directories:
-          - path: "applicationset/cluster-config/auth-service/config.json"
+        files:
+          - path: "applicationset/cluster-config/**/config.json"
   template:
     metadata:
-      name: "debug-{{.basename}}"  # Adds a debug prefix
+      name: '{{cluster.basename}}'  # Adds a debug prefix
     spec:
       project: "default"
       source:
-        repoURL: "{{.repoURL}}"
-        chart: "{{.chart}}"
-        targetRevision: "{{.version}}"
+        repoURL: '{{cluster.repoURL}}'
+        chart: "{{cluster.chart}}"
+        targetRevision: "{{cluster.version}}"
         helm:
           valueFiles:
             - values.yaml
       destination:
         server: https://kubernetes.default.svc
-        namespace: "debug-{{.namespace}}"
+        namespace: '{{cluster.namespace}}'
       syncPolicy:
         automated:
           prune: true
