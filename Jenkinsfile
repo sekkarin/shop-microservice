@@ -244,11 +244,13 @@ pipeline {
                                             // Write updated JSON back to file
                                             writeJSON(file: "applicationset/cluster-config/${service}-service/config.json", json: json, pretty: 4)
                                             sh """
+                                                git checkout main
+                                                git pull origin main  # Get latest changes
                                                 git config --global user.email "jenkins@gmail.com"
                                                 git config --global user.name "Jenkins CI"
                                                 git add applicationset/*
-                                                git commit -m "Updated inventory-service version to ${CHART_VERSION}"
-                                                git push
+                                                git commit -m "Updated ${service}-service version to ${CHART_VERSION}"
+                                                git push main
                                             """
                                         }
                                     }
