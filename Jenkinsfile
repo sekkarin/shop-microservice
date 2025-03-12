@@ -218,7 +218,7 @@ pipeline {
                             script {
                                 if (env.SERVICES_TO_DEPLOY?.trim()) {  // Check if SERVICES_TO_DEPLOY is not empty
                                     def services = env.SERVICES_TO_DEPLOY.split(' ')
-                                    git branch: "main", credentialsId: "${GIT_CREDENTIALS_ID}", url: "git@github.com:sekkarin/shop-microservices-argocd.git"
+                                    git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservices-argocd.git'
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
                                             withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
@@ -244,9 +244,9 @@ pipeline {
                                         sh """
                                             git config --global user.email "jenkins@gmail.com"
                                             git config --global user.name "Jenkins CI"
-                                            git add .
+                                            git add applicationset/*
                                             git commit -m "Updated inventory-service version to ${CHART_VERSION}"
-                                            git push origin main
+                                            git push
                                         """
                                     }
                             } else {
