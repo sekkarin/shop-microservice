@@ -1,9 +1,0 @@
-{
-  "cluster": {
-    "basename": "auth.service1",
-    "repoURL": "harbor.warering.online/shop-microservices",
-    "chart": "auth-service",
-    "version": "1.0.253",
-    "namespace": "auth1"
-  }
-}

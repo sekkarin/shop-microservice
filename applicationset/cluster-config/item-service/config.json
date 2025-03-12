@@ -1,0 +1,9 @@
+{
+  "cluster": {
+    "basename": "item.service",
+    "repoURL": "harbor.warering.online/shop-microservices",
+    "chart": "item-service",
+    "version": "1.0.264",
+    "namespace": "item"
+  }
+}

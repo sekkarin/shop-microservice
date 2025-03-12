@@ -1,0 +1,9 @@
+{
+  "cluster": {
+    "basename": "inventory.service",
+    "repoURL": "harbor.warering.online/shop-microservices",
+    "chart": "inventory-service",
+    "version": "1.0.264",
+    "namespace": "inventory"
+  }
+}
