@@ -240,12 +240,11 @@ pipeline {
                                         }
                                     }
                                     sh """
-                                        git checkout main
                                         git pull origin main  # Get latest changes
                                         git config --global user.email "jenkins@gmail.com"
                                         git config --global user.name "Jenkins CI"
-                                        git add .
-                                        git commit -m "Updated -service version to ${CHART_VERSION}"
+                                        git add applicationset/*
+                                        git commit -m "Updated service version to ${CHART_VERSION}"
                                         git push main
                                     """
                             } else {
