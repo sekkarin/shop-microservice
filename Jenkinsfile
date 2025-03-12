@@ -245,7 +245,7 @@ pipeline {
                                         git config --global user.name "Jenkins CI"
                                         git add applicationset/*
                                         git commit -m "Updated service version to ${CHART_VERSION}"
-                                        git push main
+                                        git push origin  main
                                     """
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
