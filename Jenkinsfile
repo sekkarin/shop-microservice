@@ -23,27 +23,27 @@ pipeline {
         stage('Fetch Code') {
             steps {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sekkarin/shop-microservice.git']])
-            }
-            script {
-                def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
-                def servicesToDeploy = []
-                echo "Changed Files:\n${changes}"
-                if (changes.contains('modules/auth/') || changes.contains('server/auth.go')) {
-                    servicesToDeploy << 'auth'
+                script {
+                    def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
+                    def servicesToDeploy = []
+                    echo "Changed Files:\n${changes}"
+                    if (changes.contains('modules/auth/') || changes.contains('server/auth.go')) {
+                        servicesToDeploy << 'auth'
+                    }
+                    if (changes.contains('modules/inventory/') || changes.contains('server/inventory.go')) {
+                        servicesToDeploy << 'inventory'
+                    }
+                    if (changes.contains('modules/item/') || changes.contains('server/item.go')) {
+                        servicesToDeploy << 'item'
+                    }
+                    if (changes.contains('modules/payment/') || changes.contains('server/payment.go')) {
+                        servicesToDeploy << 'payment'
+                    }
+                    if (changes.contains('modules/player/') || changes.contains('server/player.go')) {
+                        servicesToDeploy << 'player'
+                    }
+                    env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
                 }
-                if (changes.contains('modules/inventory/') || changes.contains('server/inventory.go')) {
-                    servicesToDeploy << 'inventory'
-                }
-                if (changes.contains('modules/item/') || changes.contains('server/item.go')) {
-                    servicesToDeploy << 'item'
-                }
-                if (changes.contains('modules/payment/') || changes.contains('server/payment.go')) {
-                    servicesToDeploy << 'payment'
-                }
-                if (changes.contains('modules/player/') || changes.contains('server/player.go')) {
-                    servicesToDeploy << 'player'
-                }
-                env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
             }
         }
         // stage('Unit Tests') {
@@ -214,19 +214,19 @@ pipeline {
                         script {
                             def services = env.SERVICES_TO_DEPLOY.split(' ')
                             for (service in services) {
-                                  withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                                withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
                                     sh "cp -r ./secrets-prod/${service}-prod/secret.yaml ./charts/${service}/${service}-prod-service/templates/secret.yaml"
                                     sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
                                     sh "helm dependency update ./charts/${HARBOR_USER}/${service}-serivce/"
                                     sh "helm package ./charts/${service}/${service}-serivce --version ${CHART_VERSION}"
                                     sh "helm push ${service}-serivce-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
                                 }
-                                // sh """
-                                //     helm upgrade --install ${service} ./services/${service}/deployment \
-                                //     --set image.repository=${DOCKER_REGISTRY}/${service} \
-                                //     --set image.tag=${BUILD_NUMBER} \
-                                //     --kubeconfig=$KUBE_CONFIG
-                                //     """
+                            // sh """
+                            //     helm upgrade --install ${service} ./services/${service}/deployment \
+                            //     --set image.repository=${DOCKER_REGISTRY}/${service} \
+                            //     --set image.tag=${BUILD_NUMBER} \
+                            //     --kubeconfig=$KUBE_CONFIG
+                            //     """
                             }
                         }
                     }
