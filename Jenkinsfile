@@ -15,7 +15,7 @@ pipeline {
         NAME_IMAGE_WITH_REGISTY = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}"
         SECRETS_DIR = './secrets-prod'
 
-        CHART_NAME = 'auth'           // Change to your Helm chart name
+        CHART_NAME = 'auth-service'           // Change to your Helm chart name
         CHART_VERSION = "1.0.${BUILD_NUMBER}"
     }
 
