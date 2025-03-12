@@ -245,6 +245,8 @@ pipeline {
                                             // writeJSON(file: "applicationset/cluster-config/${service}-service/config.json", json: json, pretty: 4)
                                             sh "cat applicationset/cluster-config/${service}-service/config.json"
                                             sh """
+                                                git reset --hard HEAD
+                                                git clean -fd
                                                 git checkout main
                                                 git pull origin main  # Get latest changes
                                                 git config --global user.email "jenkins@gmail.com"
