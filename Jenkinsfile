@@ -233,7 +233,7 @@ pipeline {
                                             // git branch: 'main', changelog: false, credentialsId: 'github-ssh', poll: false, url: 'https://github.com/sekkarin/shop-microservice.git'
                                             cm: scmGit(userRemoteConfigs: [
                                                 [ credentialsId: 'github-ssh',
-                                                url: 'git@github.com:jenkinsci/git-client-plugin.git',
+                                                url: 'git@github.com:sekkarin/shop-microservices-argocd.git',
                                                 branch: 'main' ]
                                             ])
                                             def json = readJSON file: "applicationset/cluster-config/${service}-service/config.json"
