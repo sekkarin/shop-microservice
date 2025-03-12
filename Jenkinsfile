@@ -219,7 +219,7 @@ pipeline {
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
                                             withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-                                                sh "cp -r ./secrets-prod/${service}-prod/secret.yaml ./charts/${service}/${service}-service/templates/secret.yaml"
+                                                sh "cp -r ./secrets-prod/${service}-prod/ ./charts/${service}/${service}-service/templates/"
                                                 sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
                                                 sh "helm dependency update ./charts/${service}/${service}-service/"
                                                 sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
