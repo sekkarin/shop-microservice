@@ -28,17 +28,17 @@ template {
 }
 template {
   source      = "/etc/vault/inventory-template"
-  destination = "/vault/secrets/inventory-prod/.env"
+  destination = "/vault/secrets/inventory-prod/secret.yaml"
 }
 template {
   source      = "/etc/vault/item-template"
-  destination = "/vault/secrets/item-prod/.env"
+  destination = "/vault/secrets/item-prod/secret.yaml"
 }
 template {
   source      = "/etc/vault/payment-template"
-  destination = "/vault/secrets/payment-prod/.env"
+  destination = "/vault/secrets/payment-prod/secret.yaml"
 }
 template {
   source      = "/etc/vault/player-template"
-  destination = "/vault/secrets/player-prod/.env"
+  destination = "/vault/secrets/player-prod/secret.yaml"
 }

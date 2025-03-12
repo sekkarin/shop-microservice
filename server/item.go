@@ -16,7 +16,7 @@ func (s *server) itemService() {
 	httpHandler := itemHandler.NewItemHttpHandler(s.cfg, usecase)
 	grpcHandler := itemHandler.NewItemGrpcHandler(usecase)
 
-	// gRPC test 6
+	// gRPC test 3
 	go func() {
 		grpcServer, lis := grpccon.NewGrpcServer(&s.cfg.Jwt, s.cfg.Grpc.ItemUrl)
 

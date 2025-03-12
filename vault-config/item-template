@@ -1,19 +1,26 @@
-APP_STAGE={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.APP_STAGE }}{{ end }}
-APP_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.APP_URL }}{{ end }}
-APP_NAME={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.APP_NAME }}{{ end }}
-DB_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.DB_URL }}{{ end }}
-JWT_ACCESS_SECRET_KEY={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_ACCESS_SECRET_KEY }}{{ end }}
-JWT_ACCESS_DURATION={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_ACCESS_DURATION }}{{ end }}
-JWT_REFRESH_SECRET_KEY={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_REFRESH_SECRET_KEY }}{{ end }}
-JWT_REFRESH_DURATION={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_REFRESH_DURATION }}{{ end }}
-JWT_API_SECRET_KEY={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_API_SECRET_KEY }}{{ end }}
-KAFKA_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.KAFKA_URL }}{{ end }}
-KAFKA_API_KEY={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.KAFKA_API_KEY }}{{ end }}
-KAFKA_API_SECRET={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.KAFKA_API_SECRET }}{{ end }}
-GRPC_AUTH_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_AUTH_URL }}{{ end }}
-GRPC_ITEM_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_ITEM_URL }}{{ end }}
-GRPC_PLAYER_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_PLAYER_URL }}{{ end }}
-GRPC_INVENTORY_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_INVENTORY_URL }}{{ end }}
-GRPC_PAYMENT_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_PAYMENT_URL }}{{ end }}
-PAGINATE_ITEM_NEXT_PAGE_BASED_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.PAGINATE_ITEM_NEXT_PAGE_BASED_URL }}{{ end }}
-PAGINATE_INVENTORY_NEXT_PAGE_BASED_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.PAGINATE_INVENTORY_NEXT_PAGE_BASED_URL }}{{ end }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-env
+type: Opaque
+stringData:
+  .env: |
+    APP_STAGE={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.APP_STAGE }}{{ end }}
+    APP_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.APP_URL }}{{ end }}
+    APP_NAME={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.APP_NAME }}{{ end }}
+    DB_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.DB_URL }}{{ end }}
+    JWT_ACCESS_SECRET_KEY={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_ACCESS_SECRET_KEY }}{{ end }}
+    JWT_ACCESS_DURATION={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_ACCESS_DURATION }}{{ end }}
+    JWT_REFRESH_SECRET_KEY={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_REFRESH_SECRET_KEY }}{{ end }}
+    JWT_REFRESH_DURATION={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_REFRESH_DURATION }}{{ end }}
+    JWT_API_SECRET_KEY={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.JWT_API_SECRET_KEY }}{{ end }}
+    KAFKA_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.KAFKA_URL }}{{ end }}
+    KAFKA_API_KEY={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.KAFKA_API_KEY }}{{ end }}
+    KAFKA_API_SECRET={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.KAFKA_API_SECRET }}{{ end }}
+    GRPC_AUTH_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_AUTH_URL }}{{ end }}
+    GRPC_ITEM_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_ITEM_URL }}{{ end }}
+    GRPC_PLAYER_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_PLAYER_URL }}{{ end }}
+    GRPC_INVENTORY_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_INVENTORY_URL }}{{ end }}
+    GRPC_PAYMENT_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.GRPC_PAYMENT_URL }}{{ end }}
+    PAGINATE_ITEM_NEXT_PAGE_BASED_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.PAGINATE_ITEM_NEXT_PAGE_BASED_URL }}{{ end }}
+    PAGINATE_INVENTORY_NEXT_PAGE_BASED_URL={{ with secret "/shop/data/prod/item-env" }}{{ .Data.data.PAGINATE_INVENTORY_NEXT_PAGE_BASED_URL }}{{ end }}

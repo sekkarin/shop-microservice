@@ -16,7 +16,7 @@ func (s *server) authService() {
 	httpHandler := authHandler.NewAuthHttpHandler(s.cfg, usecase)
 	grpcHandler := authHandler.NewAuthGrpcHandler(usecase)
 
-	// gRPC test 6
+	// gRPC test 1
 	go func() {
 		grpcServer, lis := grpccon.NewGrpcServer(&s.cfg.Jwt, s.cfg.Grpc.AuthUrl)
 
