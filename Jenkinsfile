@@ -240,9 +240,9 @@ pipeline {
 
                                             // Update the version field
                                             json.cluster.version = "${CHART_VERSION}"
-
                                             // Write updated JSON back to file
                                             writeJSON(file: "applicationset/cluster-config/${service}-service/config.json", json: json, pretty: 4)
+                                            sh "cat applicationset/cluster-config/${service}-service/config.json"
                                             sh """
                                                 git checkout main
                                                 git pull origin main  # Get latest changes
