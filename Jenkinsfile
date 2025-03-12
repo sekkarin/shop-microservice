@@ -230,7 +230,7 @@ pipeline {
                                             }
                                             // def jsonFile = readFile("applicationset/cluster-config/${service}-service/config.json")
                                             // def json = readJSON(text: jsonFile)
-                                            def json = readJSON file: "applicationset/cluster-config/${service}-service/config.json"
+                                            def json = readJSON file: 'applicationset/cluster-config/${service}-service/config.json'
 
                                             // Update the version field
                                             json.cluster.version = "${CHART_VERSION}"
