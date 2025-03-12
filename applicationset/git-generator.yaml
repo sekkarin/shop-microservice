@@ -4,19 +4,17 @@ metadata:
   name: cluster-addons
   namespace: argocd
 spec:
-  goTemplate: true
-  goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
         repoURL: https://github.com/sekkarin/shop-microservice.git
         revision: HEAD
-        files:
-          - path: "applicationset/examples/cluster-config/**/config.json"
+        directories:
+          - path: "applicationset/cluster-config/auth-service/config.json"
   template:
     metadata:
       name: '{{ .basename }}'  # Fixed syntax
     spec:
-      project: default
+      project: "{{ .namespace }}"
       source:
         repoURL: "{{ .repoURL }}"  # Corrected variable reference
         chart: "{{ .chart }}"
@@ -26,7 +24,7 @@ spec:
             - values.yaml
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{ .namespace }}"
+        namespace: default
       syncPolicy:
         automated:
           prune: true
