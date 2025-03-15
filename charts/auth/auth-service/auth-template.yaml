@@ -16,7 +16,7 @@ automountServiceAccountToken: true
 apiVersion: v1
 kind: Secret
 metadata:
-  name: chart-example-tls
+  name: auth-service-tls
 type: kubernetes.io/tls
 data:
   # Self-signed certificate for the whoami.localhost domain.
