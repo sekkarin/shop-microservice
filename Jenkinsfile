@@ -266,18 +266,18 @@ pipeline {
             }
         }
     }
-    // post {
-    //     always {
-    //         cleanWs(
-    //         cleanWhenNotBuilt: false, // Don't clean if build wasn't executed
-    //         deleteDirs: true,         // Delete all directories
-    //         disableDeferredWipeout: true,  // Clean immediately after build
-    //         notFailBuild: true,       // Ensure build doesn't fail due to cleanup
-    //         patterns: [
-    //                 [pattern: '*.properties', type: 'INCLUDE'], // Keep all .properties files
-    //                 [pattern: '*/', type: 'EXCLUDE'] // Delete all directories
-    //             ]
-    //     )
-    //     }
-    // }
+    post {
+        always {
+            cleanWs(
+            cleanWhenNotBuilt: false, // Don't clean if build wasn't executed
+            deleteDirs: true,         // Delete all directories
+            disableDeferredWipeout: true,  // Clean immediately after build
+            notFailBuild: true,       // Ensure build doesn't fail due to cleanup
+            patterns: [
+                    [pattern: '*.properties', type: 'INCLUDE'], // Keep all .properties files
+                    [pattern: '*/', type: 'EXCLUDE'] // Delete all directories
+                ]
+        )
+        }
+    }
 }
