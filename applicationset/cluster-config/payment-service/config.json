@@ -3,7 +3,7 @@
     "basename": "payment.service",
     "repoURL": "harbor.warering.online/shop-microservices",
     "chart": "payment.service",
-    "version": "1.0.267",
+    "version": "1.0.344",
     "namespace": "payment"
   }
 }
