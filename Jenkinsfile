@@ -219,7 +219,6 @@ pipeline {
                                                 sh "helm dependency update ./charts/${service}/${service}-service/"
                                                 sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
                                                 sh "helm push ${service}-service-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
-                                                sh "ls -la | grep .tgz"
                                                 sh "rm -rf ${service}-service-${CHART_VERSION}.tgz"
                                                 dir("applicationset/cluster-config/${service}-service") {
                                                     sh """
