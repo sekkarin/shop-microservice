@@ -238,22 +238,30 @@ pipeline {
                                                 // sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
                                                 sh 'pwd'
                                                 sh 'ls -lr'
-                                                def json = readJSON file: "config.json"
+                                                def json = readJSON file: 'config.json'
 
                                                 // Update the version field
                                                 json.cluster.version = "${CHART_VERSION}"
                                                 // Write updated JSON back to file
-                                                writeJSON file: "config.json", json: json
+                                                writeJSON file: 'config.json', json: json
                                                 // Show updated JSON
-                                                sh "cat config.json"
+                                                sh 'cat config.json'
                                             }
                                         }
                                     }
                                     sh """
+                                       # Ensure we are on the correct branch
+                                        git checkout main || git checkout -b main  # Checkout the main branch or create it
+
+                                        # Set user info for the commit
                                         git config --global user.email "jenkins@gmail.com"
                                         git config --global user.name "Jenkins CI"
-                                        git add applicationset/*
+
+                                        # Add and commit changes
+                                        git add applicationset/cluster-config applicationset/git-generator.yaml
                                         git commit -m "Updated service version to ${CHART_VERSION}"
+
+                                        # Push to the main branch
                                         git push origin main
                                     """
                             } else {
