@@ -231,7 +231,7 @@ pipeline {
                                         # Ensure the correct remote URL is set to the SSH URL
                                         git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
                                         git checkout main
-                                        git pull origin main -f
+                                        // git pull origin main -f
 
                                         # Set user info for commit
                                         git config --global user.email "jenkins@gmail.com"
@@ -258,6 +258,17 @@ pipeline {
                 // sh 'rm -r ${SECRETS_DIR}'
                 }
             }
+        }
+    }
+    post {
+        // Clean after build
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
+                               [pattern: '.propsfile', type: 'EXCLUDE']])
         }
     }
 }
