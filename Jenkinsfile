@@ -240,6 +240,7 @@ pipeline {
                                         # Ensure the correct remote URL is set to the SSH URL
                                         git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
                                         git checkout main
+                                        git pull origin main -f
 
                                         # Set user info for commit
                                         git config --global user.email "jenkins@gmail.com"
@@ -247,7 +248,6 @@ pipeline {
                                         # Add and commit changes
                                         git add applicationset/cluster-config/*
                                         git commit -m "Updated ApplicationsSet version to ${CHART_VERSION}"
-                                        git pull origin main --rebase
 
                                         # Push to the main branch using SSH
                                         git push
