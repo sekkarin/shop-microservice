@@ -10,11 +10,9 @@ spec:
     - name: {{ include "auth-service.fullname" . }}
       sectionName: http
       kind: Gateway
-  {{- range .Values.ingress.hosts }}
   hostnames:
-    {{- range .hosts }}
-    - {{ . | quote }}
-    {{- end }}
+  {{- range .Values.ingress.hosts }}
+    - {{ .host | quote }}
   {{ end -}}
   rules:
     {{- range .Values.ingress.hosts }}
