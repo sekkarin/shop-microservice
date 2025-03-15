@@ -233,7 +233,16 @@ pipeline {
                                                 }
                                             }
                                         }
-                                        gitPush()
+                                        sh """
+                                        git config --global user.email "jenkins@gmail.com"
+                                        git config --global user.name "Jenkins CI"
+                                        # Add and commit changes
+                                        git add applicationset/cluster-config/*
+                                        git commit -m "Updated ApplicationsSet version to ${CHART_VERSION}"
+
+                                        # Push to the main branch using SSH
+                                        git push
+                                    """
                                     }
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
