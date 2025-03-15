@@ -20,7 +20,6 @@ services:
     cap_add:
       - IPC_LOCK
     privileged: true
-    user: "${UID:-$(id -u jenkins)}:${GID:-$(id -g jenkins)}"
     restart: unless-stopped
     
 
