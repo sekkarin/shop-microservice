@@ -233,9 +233,9 @@ pipeline {
                                     }
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
-                                            dir("applicationset/cluster-config/${service}-service") {
+                                            dir("/applicationset/cluster-config/${service}-service") {
                                                 // Checkout the second repo
-                                                sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
+                                                // sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
                                                 def json = readJSON file: "applicationset/cluster-config/${service}-service/config.json"
 
                                                 // Update the version field
@@ -248,8 +248,6 @@ pipeline {
                                         }
                                     }
                                     sh """
-                                        cd shop-microservices-argocd  # Enter the directory where you cloned the second repository
-                                        git remote set-url origin git@github.com:sekkarin/shop-microservices-argocd.git  # Ensure SSH URL is used
                                         git config --global user.email "jenkins@gmail.com"
                                         git config --global user.name "Jenkins CI"
                                         git add applicationset/*
