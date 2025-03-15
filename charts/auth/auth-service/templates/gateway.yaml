@@ -1,0 +1,33 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ include "auth-service.fullname" .}}
+  labels:
+    {{- include "auth-service.labels" . | nindent 4 }}
+spec:
+  {{- with .Values.ingress.className}}
+  gatewayClassName: {{ . }}
+  {{- end }}
+
+  # Only Routes from the same namespace are allowed.
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: {{ $.Values.service.port }}
+      allowedRoutes:
+        namespaces:
+          from: Same 
+    {{- range .Values.ingress.tls }}
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: {{ .secretName }}
+      allowedRoutes:
+        namespaces:
+          from: Same
+    {{- end }}
+{{- end -}}
