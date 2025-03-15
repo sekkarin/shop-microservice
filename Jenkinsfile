@@ -245,7 +245,7 @@ pipeline {
                                         git config --global user.email "jenkins@gmail.com"
                                         git config --global user.name "Jenkins CI"
                                         # Add and commit changes
-                                        git add applicationset/*
+                                        git add applicationset/cluster-config/*
                                         git commit -m "Updated ApplicationsSet version to ${CHART_VERSION}"
 
                                         # Push to the main branch using SSH
