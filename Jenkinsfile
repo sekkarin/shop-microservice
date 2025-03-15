@@ -247,6 +247,7 @@ pipeline {
                                         # Add and commit changes
                                         git add applicationset/cluster-config/*
                                         git commit -m "Updated ApplicationsSet version to ${CHART_VERSION}"
+                                        git pull origin main --rebase
 
                                         # Push to the main branch using SSH
                                         git push
