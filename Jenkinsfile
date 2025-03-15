@@ -201,6 +201,7 @@ pipeline {
                                 -v ./secrets-prod:/vault/secrets:rw \
                                 --cap-add IPC_LOCK \
                                 --privileged \
+                                --user $(id -u jenkins):$(id -g jenkins) \
                                 hashicorp/vault:1.18 \
                                 -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
                         '''
