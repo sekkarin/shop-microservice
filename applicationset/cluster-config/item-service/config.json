@@ -3,7 +3,7 @@
     "basename": "item.service",
     "repoURL": "harbor.warering.online/shop-microservices",
     "chart": "item-service",
-    "version": "1.0.267",
+    "version": "1.0.344",
     "namespace": "item"
   }
 }
