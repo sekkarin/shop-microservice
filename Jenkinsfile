@@ -250,10 +250,10 @@ pipeline {
                                         }
                                     }
                                     sh """
-                                       # Ensure we are on the correct branch
-                                        git checkout main || git checkout -b main  # Checkout the main branch or create it
+                                        # Ensure the correct remote URL is set to the SSH URL
+                                        git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
 
-                                        # Set user info for the commit
+                                        # Set user info for commit
                                         git config --global user.email "jenkins@gmail.com"
                                         git config --global user.name "Jenkins CI"
 
@@ -261,7 +261,7 @@ pipeline {
                                         git add applicationset/cluster-config applicationset/git-generator.yaml
                                         git commit -m "Updated service version to ${CHART_VERSION}"
 
-                                        # Push to the main branch
+                                        # Push to the main branch using SSH
                                         git push origin main
                                     """
                             } else {
