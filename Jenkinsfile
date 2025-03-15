@@ -28,7 +28,7 @@ pipeline {
         stage('Fetch Code') {
             steps {
                 checkout scmGit(branches: [[name: GIT_BRANCH]],
-                extensions: [lfs(), cleanBeforeCheckout(deleteUntrackedNestedRepositories: true),
+                extensions: [ cleanBeforeCheckout(deleteUntrackedNestedRepositories: true),
                 [$class: 'WipeWorkspace']],
                 userRemoteConfigs: [[credentialsId: GIT_CREDENTIALS_ID, url: GIT_REPO_URL]])
                 script {
