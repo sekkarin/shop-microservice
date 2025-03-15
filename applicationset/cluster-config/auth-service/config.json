@@ -3,7 +3,7 @@
     "basename": "auth.service",
     "repoURL": "harbor.warering.online/shop-microservices",
     "chart": "auth-service",
-    "version": "1.0.314",
+    "version": "1.0.320",
     "namespace": "auth"
   }
 }
