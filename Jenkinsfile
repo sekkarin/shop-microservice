@@ -52,6 +52,7 @@ pipeline {
                         servicesToDeploy << 'player'
                     }
                     env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
+                    echo "${env.SERVICES_TO_DEPLOY}"
                 }
             }
         }
