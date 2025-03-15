@@ -211,10 +211,10 @@ pipeline {
                                 if (env.SERVICES_TO_DEPLOY?.trim()) {  // Check if SERVICES_TO_DEPLOY is not empty
                                     def services = env.SERVICES_TO_DEPLOY.split(' ')
 
-                                    sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
-                                    for (service in services) {
-                                        if (service.trim()) {  // Ensure no empty values
-                                            withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                                    withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                                        sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
+                                        for (service in services) {
+                                            if (service.trim()) {  // Ensure no empty values
                                                 sh "cp -r ./secrets-prod/${service}-prod/secret.yaml ./charts/${service}/${service}-service/templates/secret.yaml"
                                                 sh "helm dependency update ./charts/${service}/${service}-service/"
                                                 sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
@@ -222,13 +222,12 @@ pipeline {
                                                 sh "rm -rf ${service}-service-${CHART_VERSION}.tgz"
                                                 dir("applicationset/cluster-config/${service}-service") {
                                                     sh """
-                                                        jq '.cluster.version = "${CHART_VERSION}"' config.json > temp.json && mv temp.json config.json
-                                                    """
+                                                jq '.cluster.version = "${CHART_VERSION}"' config.json > temp.json && mv temp.json config.json
+                                            """
                                                 }
                                             }
                                         }
-                                    }
-                                    sh """
+                                        sh """
                                         # Ensure the correct remote URL is set to the SSH URL
                                         git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
                                         git checkout main
@@ -244,6 +243,7 @@ pipeline {
                                         # Push to the main branch using SSH
                                         git push
                                     """
+                                    }
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
                                 }
