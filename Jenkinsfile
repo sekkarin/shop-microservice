@@ -233,8 +233,7 @@ pipeline {
                                     }
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
-                                            
-                                            sh "ls -la applicationset/cluster-config/${service}-service"
+
                                             dir("applicationset/cluster-config/${service}-service") {
                                                 // Checkout the second repo
                                                 // sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
@@ -244,9 +243,9 @@ pipeline {
                                                 // Update the version field
                                                 json.cluster.version = "${CHART_VERSION}"
                                                 // Write updated JSON back to file
-                                                writeJSON file: 'config.json', json: json, pretty: 4
-                                                // Show updated JSON
                                                 sh 'cat config.json'
+                                                writeJSON file: config.json, json: json, pretty: 4
+                                                // Show updated JSON
                                             }
                                         }
                                     }
@@ -263,9 +262,9 @@ pipeline {
                                     //     git add applicationset/*
                                     //     git commit -m "Updated service version to ${CHART_VERSION}"
 
-                                    //     # Push to the main branch using SSH
-                                    //     git push 
-                                    // """
+                            //     # Push to the main branch using SSH
+                            //     git push
+                            // """
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
                                 }
