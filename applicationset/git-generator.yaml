@@ -12,7 +12,7 @@ spec:
           - path: "applicationset/cluster-config/**/config.json"
   template:
     metadata:
-      name: '{{cluster.basename}}'  # Adds a debug prefix
+      name: '{{cluster.basename}}'  # Adds a debug prefix 
     spec:
       project: "default"
       source:
