@@ -25,7 +25,7 @@ pipeline {
     stages {
         stage('Fetch Code') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], credentialsId: 'github-ssh', extensions: [], userRemoteConfigs: [[url: 'https://github.com/sekkarin/shop-microservice.git']])
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sekkarin/shop-microservice.git']])
                 script {
                     def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
                     def servicesToDeploy = []
@@ -101,80 +101,80 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Build & Container Security Scan') {
-            steps {
-                script {
-                    sh '''
-                     docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
-                    '''
-                    sh '''
-                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
-                    '''
-                }
-            }
-            post {
-                success {
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-                        reportFiles: 'CSS-report.html',
-                        reportName: 'HTML Report CSS',
-                        reportTitles: '',
-                        useWrapperFileDirectly: true
-                    ])
-                }
-            }
-        }
-        stage('DAST - Web Security Scan') {
-            steps {
-                script {
-                    withCredentials([
-                        file(credentialsId: 'VAULT_SECRET_ID', variable: 'SECRET_ID'),
-                        file(credentialsId: 'VAULT_SECRET_TOKEN', variable: 'SECRET_TOKEN')
-                    ]) {
-                        sh 'mv $SECRET_ID ./vault-agent-config/'
-                        sh 'mv $SECRET_TOKEN ./vault-agent-config/'
-                        sh 'docker compose -f compose.yaml up -d --build'
-                    // sh '''
-                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
-                    // '''
-                    // sh '''
-                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/refresh-token -f openapi -I -r report-api.html
-                    // '''
-                    // sh '''
-                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/logout -f openapi -I -r report-api.html
-                    // '''
-                    // sh '''
-                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1 -f openapi -I -r report-api.html
-                    // '''
-                    }
-                    withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-                        sh "docker login $HARBOR_REGISTRY -u $HARBOR_USER -p $HARBOR_PASS"
-                        sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
-                        sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
-                    }
-                }
-            }
-            post {
-                always {
-                    sh 'docker compose -f compose.yaml down'
-                    sh "docker rmi $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
-                    sh "docker rmi $NAME_IMAGE_WITH_REGISTY:latest"
-                }
-                success {
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-                        reportFiles: 'report-api.html',
-                        reportName: 'HTML Report',
-                        reportTitles: '',
-                        useWrapperFileDirectly: true
-                    ])
-                }
-            }
-        }
+        // stage('Build & Container Security Scan') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //              docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
+        //             '''
+        //             sh '''
+        //             docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
+        //             '''
+        //         }
+        //     }
+        //     post {
+        //         success {
+        //             publishHTML([
+        //                 allowMissing: false,
+        //                 alwaysLinkToLastBuild: false,
+        //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+        //                 reportFiles: 'CSS-report.html',
+        //                 reportName: 'HTML Report CSS',
+        //                 reportTitles: '',
+        //                 useWrapperFileDirectly: true
+        //             ])
+        //         }
+        //     }
+        // }
+        // stage('DAST - Web Security Scan') {
+        //     steps {
+        //         script {
+        //             withCredentials([
+        //                 file(credentialsId: 'VAULT_SECRET_ID', variable: 'SECRET_ID'),
+        //                 file(credentialsId: 'VAULT_SECRET_TOKEN', variable: 'SECRET_TOKEN')
+        //             ]) {
+        //                 sh 'mv $SECRET_ID ./vault-agent-config/'
+        //                 sh 'mv $SECRET_TOKEN ./vault-agent-config/'
+        //                 sh 'docker compose -f compose.yaml up -d --build'
+        //             // sh '''
+        //             //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
+        //             // '''
+        //             // sh '''
+        //             //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/refresh-token -f openapi -I -r report-api.html
+        //             // '''
+        //             // sh '''
+        //             //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/logout -f openapi -I -r report-api.html
+        //             // '''
+        //             // sh '''
+        //             //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1 -f openapi -I -r report-api.html
+        //             // '''
+        //             }
+        //             withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+        //                 sh "docker login $HARBOR_REGISTRY -u $HARBOR_USER -p $HARBOR_PASS"
+        //                 sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
+        //                 sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
+        //             }
+        //         }
+        //     }
+        //     post {
+        //         always {
+        //             sh 'docker compose -f compose.yaml down'
+        //             sh "docker rmi $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
+        //             sh "docker rmi $NAME_IMAGE_WITH_REGISTY:latest"
+        //         }
+        //         success {
+        //             publishHTML([
+        //                 allowMissing: false,
+        //                 alwaysLinkToLastBuild: false,
+        //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+        //                 reportFiles: 'report-api.html',
+        //                 reportName: 'HTML Report',
+        //                 reportTitles: '',
+        //                 useWrapperFileDirectly: true
+        //             ])
+        //         }
+        //     }
+        // }
         stage('Push Helm Chart') {
             steps {
                 script {
@@ -227,25 +227,34 @@ pipeline {
                                                 sh "helm dependency update ./charts/${service}/${service}-service/"
                                                 sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
                                                 sh "helm push ${service}-service-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
+                                                sh "rm -rf ${service}-service-${CHART_VERSION}.tgz"
                                             }
+                                        }
+                                    }
+                                    for (service in services) {
+                                        if (service.trim()) {  // Ensure no empty values
+                                            dir("applicationset/cluster-config/${service}-service") {
+                                                // Checkout the second repo
+                                                sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
+                                                def json = readJSON file: "applicationset/cluster-config/${service}-service/config.json"
 
-                                            def json = readJSON file: "applicationset/cluster-config/${service}-service/config.json"
-
-                                            // Update the version field
-                                            json.cluster.version = "${CHART_VERSION}"
-                                            // Write updated JSON back to file
-                                            writeJSON file: "applicationset/cluster-config/${service}-service/config.json", json: json
-                                            // writeJSON(file: "applicationset/cluster-config/${service}-service/config.json", json: json, pretty: 4)
-                                            sh "cat applicationset/cluster-config/${service}-service/config.json"
+                                                // Update the version field
+                                                json.cluster.version = "${CHART_VERSION}"
+                                                // Write updated JSON back to file
+                                                writeJSON file: "applicationset/cluster-config/${service}-service/config.json", json: json
+                                                // Show updated JSON
+                                                sh "cat applicationset/cluster-config/${service}-service/config.json"
+                                            }
                                         }
                                     }
                                     sh """
-                                        git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # Ensure SSH URL
+                                        cd shop-microservices-argocd  # Enter the directory where you cloned the second repository
+                                        git remote set-url origin git@github.com:sekkarin/shop-microservices-argocd.git  # Ensure SSH URL is used
                                         git config --global user.email "jenkins@gmail.com"
                                         git config --global user.name "Jenkins CI"
                                         git add applicationset/*
                                         git commit -m "Updated service version to ${CHART_VERSION}"
-                                        git push origin  main
+                                        git push origin main
                                     """
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
