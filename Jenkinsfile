@@ -26,6 +26,7 @@ pipeline {
         stage('Fetch Code') {
             steps {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sekkarin/shop-microservice.git']])
+                sh "git reset --hard origin/main"
                 script {
                     def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
                     def servicesToDeploy = []

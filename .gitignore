@@ -20,6 +20,10 @@
 # Go workspace file
 go.work
 
+secret.yaml
+secret.yml
+token
+.env
 # Environment
 /env/prod
 *.toml
@@ -32,5 +36,6 @@ go.work
 /env/compose/hostname
 /env/compose/hosts
 command.txt
-
+secrets-*
+secrets
 # End of https://www.toptal.com/developers/gitignore/api/go
