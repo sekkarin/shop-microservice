@@ -239,7 +239,7 @@ pipeline {
                                                 // sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
                                                 sh 'pwd'
                                                 sh """
-                                                    sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${CHART_VERSION}\"/" config.json
+                                                   jq '.cluster.version = "1.0.300"' config.json > temp.json && mv temp.json config.json
                                                 """
                                             }
                                         }
