@@ -219,11 +219,12 @@ pipeline {
                                                 sh "helm dependency update ./charts/${service}/${service}-service/"
                                                 sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
                                                 sh "helm push ${service}-service-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
+                                                sh "ls -la | grep *.tar"
                                                 sh "rm -rf ${service}-service-${CHART_VERSION}.tgz"
                                                 dir("applicationset/cluster-config/${service}-service") {
                                                     sh """
-                                                jq '.cluster.version = "${CHART_VERSION}"' config.json > temp.json && mv temp.json config.json
-                                            """
+                                                  jq '.cluster.version = "${CHART_VERSION}"' config.json > temp.json && mv temp.json config.json
+                                                 """
                                                 }
                                             }
                                         }
