@@ -231,7 +231,6 @@ pipeline {
                                             }
                                         }
                                     }
-
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
                                             dir("applicationset/cluster-config/${service}-service") {
@@ -244,30 +243,27 @@ pipeline {
                                                 // Update the version field
                                                 json.cluster.version = "${CHART_VERSION}"
                                                 // Write updated JSON back to file
-                                                writeJSON file: 'config.json', json: json
+                                                writeJSON file: 'config.json', json: json, pretty: 4
                                                 // Show updated JSON
                                                 sh 'cat config.json'
                                             }
                                         }
                                     }
                                     sh """
-                                        # Ensure you're on the correct branch
-                                        git checkout main || git checkout -b main
+                                        # Ensure the correct remote URL is set to the SSH URL
+                                        git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
+                                        git checkout main
 
                                         # Set user info for commit
                                         git config --global user.email "jenkins@gmail.com"
                                         git config --global user.name "Jenkins CI"
-
-                                        # Pull the latest changes from the remote repository
-                                        git pull origin main --rebase
-
                                         # Add and commit changes
-                                        git add applicationset/cluster-config applicationset/git-generator.yaml
+                                        git add applicationset/*
                                         git commit -m "Updated service version to ${CHART_VERSION}"
 
-                                        # Push the changes to the remote main branch
-                                        git push origin main
-                                        """
+                                        # Push to the main branch using SSH
+                                        git push 
+                                    """
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
                                 }
