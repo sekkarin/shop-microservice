@@ -101,80 +101,80 @@ pipeline {
         //         }
         //     }
         // }
-        // stage('Build & Container Security Scan') {
-        //     steps {
-        //         script {
-        //             sh '''
-        //              docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
-        //             '''
-        //             sh '''
-        //             docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
-        //             '''
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             publishHTML([
-        //                 allowMissing: false,
-        //                 alwaysLinkToLastBuild: false,
-        //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-        //                 reportFiles: 'CSS-report.html',
-        //                 reportName: 'HTML Report CSS',
-        //                 reportTitles: '',
-        //                 useWrapperFileDirectly: true
-        //             ])
-        //         }
-        //     }
-        // }
-        // stage('DAST - Web Security Scan') {
-        //     steps {
-        //         script {
-        //             withCredentials([
-        //                 file(credentialsId: 'VAULT_SECRET_ID', variable: 'SECRET_ID'),
-        //                 file(credentialsId: 'VAULT_SECRET_TOKEN', variable: 'SECRET_TOKEN')
-        //             ]) {
-        //                 sh 'mv $SECRET_ID ./vault-agent-config/'
-        //                 sh 'mv $SECRET_TOKEN ./vault-agent-config/'
-        //                 sh 'docker compose -f compose.yaml up -d --build'
-        //             // sh '''
-        //             //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
-        //             // '''
-        //             // sh '''
-        //             //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/refresh-token -f openapi -I -r report-api.html
-        //             // '''
-        //             // sh '''
-        //             //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/logout -f openapi -I -r report-api.html
-        //             // '''
-        //             // sh '''
-        //             //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1 -f openapi -I -r report-api.html
-        //             // '''
-        //             }
-        //             withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-        //                 sh "docker login $HARBOR_REGISTRY -u $HARBOR_USER -p $HARBOR_PASS"
-        //                 sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
-        //                 sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
-        //             }
-        //         }
-        //     }
-        //     post {
-        //         always {
-        //             sh 'docker compose -f compose.yaml down'
-        //             sh "docker rmi $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
-        //             sh "docker rmi $NAME_IMAGE_WITH_REGISTY:latest"
-        //         }
-        //         success {
-        //             publishHTML([
-        //                 allowMissing: false,
-        //                 alwaysLinkToLastBuild: false,
-        //                 keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
-        //                 reportFiles: 'report-api.html',
-        //                 reportName: 'HTML Report',
-        //                 reportTitles: '',
-        //                 useWrapperFileDirectly: true
-        //             ])
-        //         }
-        //     }
-        // }
+        stage('Build & Container Security Scan') {
+            steps {
+                script {
+                    sh '''
+                     docker build -t ${NAME_IMAGE_WITH_REGISTY}:latest -t ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER -f ./Dockerfile .
+                    '''
+                    sh '''
+                    docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/app ${TRIVY_IMAGE} image --format template --template "@contrib/html.tpl" -o /app/CSS-report.html --scanners vuln,misconfig,secret,license ${NAME_IMAGE_WITH_REGISTY}:$BUILD_NUMBER
+                    '''
+                }
+            }
+            post {
+                success {
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+                        reportFiles: 'CSS-report.html',
+                        reportName: 'HTML Report CSS',
+                        reportTitles: '',
+                        useWrapperFileDirectly: true
+                    ])
+                }
+            }
+        }
+        stage('DAST - Web Security Scan') {
+            steps {
+                script {
+                    withCredentials([
+                        file(credentialsId: 'VAULT_SECRET_ID', variable: 'SECRET_ID'),
+                        file(credentialsId: 'VAULT_SECRET_TOKEN', variable: 'SECRET_TOKEN')
+                    ]) {
+                        sh 'mv $SECRET_ID ./vault-agent-config/'
+                        sh 'mv $SECRET_TOKEN ./vault-agent-config/'
+                        sh 'docker compose -f compose.yaml up -d --build'
+                    // sh '''
+                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
+                    // '''
+                    // sh '''
+                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/refresh-token -f openapi -I -r report-api.html
+                    // '''
+                    // sh '''
+                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/logout -f openapi -I -r report-api.html
+                    // '''
+                    // sh '''
+                    //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1 -f openapi -I -r report-api.html
+                    // '''
+                    }
+                    withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                        sh "docker login $HARBOR_REGISTRY -u $HARBOR_USER -p $HARBOR_PASS"
+                        sh "docker push $NAME_IMAGE_WITH_REGISTY:latest"
+                        sh "docker push $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
+                    }
+                }
+            }
+            post {
+                always {
+                    sh 'docker compose -f compose.yaml down'
+                    sh "docker rmi $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
+                    sh "docker rmi $NAME_IMAGE_WITH_REGISTY:latest"
+                }
+                success {
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: false, reportDir: '/var/lib/jenkins/workspace/Shop-microservices',
+                        reportFiles: 'report-api.html',
+                        reportName: 'HTML Report',
+                        reportTitles: '',
+                        useWrapperFileDirectly: true
+                    ])
+                }
+            }
+        }
         stage('Push Helm Chart') {
             steps {
                 script {
@@ -206,14 +206,6 @@ pipeline {
                             sleep(time: 5, unit: 'SECONDS')
                         }
                         echo "Found 6 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
-                        // sh 'cp -r ./secrets-prod/auth-prod/secret.yaml ./charts/auth/auth-service/templates/secret.yaml'
-
-                        // withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-                        //     sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS} "
-                        //     sh "helm dependency update ./charts/auth/${CHART_NAME}/"
-                        //     sh "helm package ./charts/auth/${CHART_NAME} --version ${CHART_VERSION}"
-                        //     sh "helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
-                        // }
                         script {
                             script {
                                 if (env.SERVICES_TO_DEPLOY?.trim()) {  // Check if SERVICES_TO_DEPLOY is not empty
@@ -267,41 +259,5 @@ pipeline {
                 }
             }
         }
-    // stage('Deploy to Kubernetes') {
-    //     steps {
-    //         script {
-    //             def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
-    //             def servicesToDeploy = []
-    //             echo "Changed Files:\n${changes}"
-    //             if (changes.contains('modules/auth/') || changes.contains('server/auth.go')) {
-    //                 servicesToDeploy << 'auth-service'
-    //             }
-    //             if (changes.contains('modules/inventory/') || changes.contains('server/inventory.go')) {
-    //                 servicesToDeploy << 'inventory-service'
-    //             }
-    //             if (changes.contains('modules/item/') || changes.contains('server/item.go')) {
-    //                 servicesToDeploy << 'item-service'
-    //             }
-    //             if (changes.contains('modules/payment/') || changes.contains('server/payment.go')) {
-    //                 servicesToDeploy << 'payment-service'
-    //             }
-    //             if (changes.contains('modules/player/') || changes.contains('server/player.go')) {
-    //                 servicesToDeploy << 'player-service'
-    //             }
-    //             env.SERVICES_TO_DEPLOY = servicesToDeploy.join(' ')
-    //         }
-    //         // script {
-    //         //     def services = env.SERVICES_TO_DEPLOY.split(' ')
-    //         //     for (service in services) {
-    //         //         sh """
-    //         //         helm upgrade --install ${service} ./services/${service}/deployment \
-    //         //           --set image.repository=${DOCKER_REGISTRY}/${service} \
-    //         //           --set image.tag=${BUILD_NUMBER} \
-    //         //           --kubeconfig=$KUBE_CONFIG
-    //         //         """
-    //         //     }
-    //         // }
-    //     }
-    // }
     }
 }
