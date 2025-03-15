@@ -3,7 +3,7 @@
     "basename": "player.service",
     "repoURL": "harbor.warering.online/shop-microservices",
     "chart": "player-service",
-    "version": "1.0.344",
+    "version": "1.0.360",
     "namespace": "player"
   }
 }
