@@ -231,6 +231,17 @@ pipeline {
                                             }
                                         }
                                     }
+                                    sh '''
+                                       # Ensure the correct remote URL is set to the SSH URL
+                                        git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
+
+                                        # Set user info for commit
+                                        git config --global user.email "jenkins@gmail.com"
+                                        git config --global user.name "Jenkins CI"
+
+                                        git pull origin main --rebase
+
+                                    '''
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
                                             dir("applicationset/cluster-config/${service}-service") {
@@ -250,13 +261,6 @@ pipeline {
                                         }
                                     }
                                     sh """
-                                        # Ensure the correct remote URL is set to the SSH URL
-                                        git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
-
-                                        # Set user info for commit
-                                        git config --global user.email "jenkins@gmail.com"
-                                        git config --global user.name "Jenkins CI"
-
                                         # Add and commit changes
                                         git add applicationset/cluster-config applicationset/git-generator.yaml
                                         git commit -m "Updated service version to ${CHART_VERSION}"
