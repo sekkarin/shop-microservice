@@ -211,11 +211,11 @@ pipeline {
                                 if (env.SERVICES_TO_DEPLOY?.trim()) {  // Check if SERVICES_TO_DEPLOY is not empty
                                     def services = env.SERVICES_TO_DEPLOY.split(' ')
 
+                                    sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
                                             withCredentials([usernamePassword(credentialsId: 'JenkinsCredential', usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
                                                 sh "cp -r ./secrets-prod/${service}-prod/secret.yaml ./charts/${service}/${service}-service/templates/secret.yaml"
-                                                sh "helm registry login ${HARBOR_REGISTRY} --username ${HARBOR_USER} --password ${HARBOR_PASS}"
                                                 sh "helm dependency update ./charts/${service}/${service}-service/"
                                                 sh "helm package ./charts/${service}/${service}-service --version ${CHART_VERSION}"
                                                 sh "helm push ${service}-service-${CHART_VERSION}.tgz oci://${HARBOR_REGISTRY}/${HARBOR_PROJECT}"
