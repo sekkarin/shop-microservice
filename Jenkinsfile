@@ -233,7 +233,7 @@ pipeline {
                                     }
                                     for (service in services) {
                                         if (service.trim()) {  // Ensure no empty values
-                                            dir("/applicationset/cluster-config/${service}-service") {
+                                            dir("applicationset/cluster-config/${service}-service") {
                                                 // Checkout the second repo
                                                 // sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
                                                 sh 'pwd'
