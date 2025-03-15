@@ -171,7 +171,6 @@ pipeline {
                     sh 'docker compose -f compose.yaml down'
                     sh "docker rmi $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
                     sh "docker rmi $NAME_IMAGE_WITH_REGISTY:latest"
-                    sh 'docker stop vault-agent'
                 }
                 success {
                     publishHTML([
