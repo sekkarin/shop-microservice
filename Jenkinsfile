@@ -260,15 +260,7 @@ pipeline {
     }
     post {
         always {
-            cleanWs(
-            cleanWhenNotBuilt: false, // Don't clean if build wasn't executed
-            deleteDirs: true,         // Delete all directories
-            disableDeferredWipeout: true,  // Clean immediately after build
-            notFailBuild: true,       // Ensure build doesn't fail due to cleanup
-            patterns: [
-                [pattern: '*', type: 'INCLUDE'] // Include all files
-            ]
-        )
+           sh 'rm -rf /var/lib/jenkins/workspace/Shop-microservices'
         }
     }
 }
