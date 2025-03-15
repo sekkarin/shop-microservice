@@ -238,14 +238,7 @@ pipeline {
                                                 // Checkout the second repo
                                                 // sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
                                                 sh 'pwd'
-                                                def json = readJSON file: 'config.json'
-
-                                                // Update the version field
-                                                json.cluster.version = "${CHART_VERSION}"
-                                                // Write updated JSON back to file
-                                                sh 'cat config.json'
-                                                writeJSON file: 'config.json', json: json, pretty: 4
-                                                // Show updated JSON
+                                                sh 'sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$CHART_VERSION\"/" config.json'
                                             }
                                         }
                                     }
