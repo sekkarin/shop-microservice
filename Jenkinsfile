@@ -244,7 +244,7 @@ pipeline {
                                                 json.cluster.version = "${CHART_VERSION}"
                                                 // Write updated JSON back to file
                                                 sh 'cat config.json'
-                                                writeJSON file: config.json, json: json, pretty: 4
+                                                writeJSON file: 'config.json', json: json, pretty: 4
                                                 // Show updated JSON
                                             }
                                         }
