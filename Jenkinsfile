@@ -249,22 +249,22 @@ pipeline {
                                             }
                                         }
                                     }
-                                    sh """
-                                        # Ensure the correct remote URL is set to the SSH URL
-                                        git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
-                                        git checkout main
-                                        git pull origin main --rebase
+                                    // sh """
+                                    //     # Ensure the correct remote URL is set to the SSH URL
+                                    //     git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
+                                    //     git checkout main
+                                    //     git pull origin main --rebase
 
-                                        # Set user info for commit
-                                        git config --global user.email "jenkins@gmail.com"
-                                        git config --global user.name "Jenkins CI"
-                                        # Add and commit changes
-                                        git add applicationset/*
-                                        git commit -m "Updated service version to ${CHART_VERSION}"
+                                    //     # Set user info for commit
+                                    //     git config --global user.email "jenkins@gmail.com"
+                                    //     git config --global user.name "Jenkins CI"
+                                    //     # Add and commit changes
+                                    //     git add applicationset/*
+                                    //     git commit -m "Updated service version to ${CHART_VERSION}"
 
-                                        # Push to the main branch using SSH
-                                        git push 
-                                    """
+                                    //     # Push to the main branch using SSH
+                                    //     git push 
+                                    // """
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'
                                 }
