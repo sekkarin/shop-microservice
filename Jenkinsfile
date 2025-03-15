@@ -15,6 +15,7 @@ pipeline {
         HARBOR_PROJECT =  'shop-microservices'
         NAME_IMAGE_WITH_REGISTY = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}"
         SECRETS_DIR = './secrets-prod'
+        SECRETS_DIR_TEST = './secrets'
 
         CHART_NAME = 'auth-service'           // Change to your Helm chart name
         CHART_VERSION = "1.0.${BUILD_NUMBER}"
@@ -155,11 +156,11 @@ pipeline {
                         '''
                         def subdirectoryCount = 0
                         while (subdirectoryCount < 6) {
-                            subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
-                            echo "Waiting for exactly 6 subdirectories in ${SECRETS_DIR}... (Current count: ${subdirectoryCount})"
+                            subdirectoryCount = sh(script: "find ${SECRETS_DIR_TEST} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
+                            echo "Waiting for exactly 6 subdirectories in ${SECRETS_DIR_TEST}... (Current count: ${subdirectoryCount})"
                             sleep(time: 5, unit: 'SECONDS')
                         }
-                        echo "Found 6 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
+                        echo "Found 6 subdirectories in ${SECRETS_DIR_TEST}. Proceeding with the next step."
                         sh 'docker compose -f compose.yaml up -d --build'
                     // sh '''
                     //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
@@ -279,20 +280,6 @@ pipeline {
                 // sh 'rm -r ${SECRETS_DIR}'
                 }
             }
-        }
-    }
-    post {
-        always {
-            cleanWs(
-            cleanWhenNotBuilt: false, // Don't clean if build wasn't executed
-            deleteDirs: true,         // Delete all directories
-            disableDeferredWipeout: true,  // Clean immediately after build
-            notFailBuild: true,       // Ensure build doesn't fail due to cleanup
-            patterns: [
-                    [pattern: '*.properties', type: 'INCLUDE'], // Keep all .properties files
-                    [pattern: '*/', type: 'EXCLUDE'] // Delete all directories
-                ]
-        )
         }
     }
 }
