@@ -140,6 +140,26 @@ pipeline {
                     ]) {
                         sh 'mv $SECRET_ID ./vault-agent-config/'
                         sh 'mv $SECRET_TOKEN ./vault-agent-config/'
+                        sh '''
+                            docker run -d --rm \
+                                --name vault-agent \
+                                --entrypoint /bin/sh \
+                                -e VAULT_ADDR=http://192.168.60.50:8200 \
+                                -v ./vault-agent-config:/etc/vault:rw \
+                                -v ./secrets:/vault/secrets:rw \
+                                --cap-add IPC_LOCK \
+                                --privileged \
+                                --user $(id -u jenkins):$(id -g jenkins) \
+                                hashicorp/vault:1.18 \
+                                -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
+                        '''
+                        def subdirectoryCount = 0
+                        while (subdirectoryCount < 6) {
+                            subdirectoryCount = sh(script: "find ${SECRETS_DIR} -maxdepth 1 -type d | wc -l", returnStdout: true).trim().toInteger()
+                            echo "Waiting for exactly 6 subdirectories in ${SECRETS_DIR}... (Current count: ${subdirectoryCount})"
+                            sleep(time: 5, unit: 'SECONDS')
+                        }
+                        echo "Found 6 subdirectories in ${SECRETS_DIR}. Proceeding with the next step."
                         sh 'docker compose -f compose.yaml up -d --build'
                     // sh '''
                     //     docker run --rm --user root  -v ${WORKSPACE}:/zap/wrk $ZAP_IMAGE zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):3000/auth_v1/auth/login -f openapi -I -r report-api.html
@@ -166,6 +186,7 @@ pipeline {
                     sh 'docker compose -f compose.yaml down'
                     sh "docker rmi $NAME_IMAGE_WITH_REGISTY:$BUILD_NUMBER"
                     sh "docker rmi $NAME_IMAGE_WITH_REGISTY:latest"
+                    sh 'docker stop vault-agent'
                 }
                 success {
                     publishHTML([
@@ -241,7 +262,7 @@ pipeline {
                                         git commit -m "Updated ApplicationsSet version to ${CHART_VERSION}"
 
                                         # Push to the main branch using SSH
-                                        git push
+                                        git push HEAD:main
                                     """
                                     }
                             } else {
