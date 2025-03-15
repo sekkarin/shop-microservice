@@ -8,21 +8,6 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  vault-agent:
-    image: hashicorp/vault:1.18
-    container_name: vault-agent
-    entrypoint:  /bin/sh -c "mkdir -p /etc/vault && vault agent -config=/etc/vault/vault-agent.hcl"
-    environment:
-      VAULT_ADDR: http://192.168.60.50:8200
-    volumes:
-      - ./vault-agent-config:/etc/vault:rw
-      - ./secrets:/vault/secrets/
-    cap_add:
-      - IPC_LOCK
-    privileged: true
-    restart: unless-stopped
-    
-
   shop-auth:
     build:
       context: .
@@ -31,8 +16,7 @@ services:
       - ./secrets/auth-test/:/etc/env/
     ports:
       - 3000:3000
-    depends_on:
-      - vault-agent
+    
   shop-inventory:
     build:
       context: .
@@ -41,8 +25,7 @@ services:
       - ./secrets/inventory-test/:/etc/env/
     ports:
       - 3001:3000
-    depends_on:
-      - vault-agent
+    
   shop-item:
     build:
       context: .
@@ -51,8 +34,7 @@ services:
       - ./secrets/item-test/:/etc/env/
     ports:
       - 3002:3000
-    depends_on:
-      - vault-agent
+    
   shop-payment:
     build:
       context: .
@@ -61,8 +43,7 @@ services:
       - ./secrets/payment-test/:/etc/env/
     ports:
       - 3003:3000
-    depends_on:
-      - vault-agent
+    
   shop-player:
     build:
       context: .
@@ -71,5 +52,4 @@ services:
       - ./secrets/player-test/:/etc/env/
     ports:
       - 3004:3000
-    depends_on:
-      - vault-agent
+    
