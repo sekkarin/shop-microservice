@@ -38,4 +38,10 @@ token
 command.txt
 secrets-*
 secrets
+tokenca
+token
+vault-agent-config/tokenca
+vault-agent-config/token
+vault-config/token
+vault-config/tokenca
 # End of https://www.toptal.com/developers/gitignore/api/go

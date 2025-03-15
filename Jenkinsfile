@@ -20,13 +20,17 @@ pipeline {
         CHART_VERSION = "1.0.${BUILD_NUMBER}"
 
         GIT_CREDENTIALS_ID = 'github-ssh'
+        GIT_REPO_URL = 'git@github.com:sekkarin/shop-microservice.git'
+        GIT_BRANCH = 'main'
     }
 
     stages {
         stage('Fetch Code') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sekkarin/shop-microservice.git']])
-                sh "git reset --hard origin/main"
+                checkout scmGit(branches: [[name: GIT_BRANCH]],
+                extensions: [lfs(), cleanBeforeCheckout(deleteUntrackedNestedRepositories: true),
+                [$class: 'WipeWorkspace']],
+                userRemoteConfigs: [[credentialsId: GIT_CREDENTIALS_ID, url: GIT_REPO_URL]])
                 script {
                     def changes = sh(script: 'git diff --name-only HEAD~1', returnStdout: true).trim()
                     def servicesToDeploy = []
@@ -228,6 +232,12 @@ pipeline {
                                                 }
                                             }
                                         }
+                                        gitPush(
+                                            credentialsId: GIT_CREDENTIALS_ID, // Use the credentials you stored in Jenkins
+                                            branch: GIT_BRANCH,               // The branch you're pushing to
+                                            remote: GIT_REPO_URL,             // The GitHub repository URL
+                                            pushOnlyIfSuccess: false          // If true, push only if previous stages were successful
+                                        )
                                         sh """
                                         # Ensure the correct remote URL is set to the SSH URL
                                         git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
