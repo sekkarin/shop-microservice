@@ -231,8 +231,6 @@ pipeline {
                                         # Ensure the correct remote URL is set to the SSH URL
                                         git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
                                         git checkout main
-                                        // git pull origin main -f
-
                                         # Set user info for commit
                                         git config --global user.email "jenkins@gmail.com"
                                         git config --global user.name "Jenkins CI"
