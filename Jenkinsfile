@@ -141,6 +141,7 @@ pipeline {
                     ]) {
                         sh 'mv $SECRET_ID ./vault-agent-config/'
                         sh 'mv $SECRET_TOKEN ./vault-agent-config/'
+                        sh 'mkdir secrets'
                         sh '''
                             docker run -d --rm \
                                 --name vault-agent \
