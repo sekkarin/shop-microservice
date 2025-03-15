@@ -65,11 +65,11 @@ ingress:
   - host: auth.warering.online
     paths:
     - path: /
-      pathType: ImplementationSpecific
+      pathType: PathPrefix
   tls:
   - secretName: chart-example-tls
     hosts:
-    - chart-example.local
+    - auth.warering.online
 
   limits:
     cpu: 100m
