@@ -20,9 +20,9 @@ spec:
         {{- range .paths }}
         - path:
           {{- with .pathType }}
-            pathType: {{ . }}
+            type: {{ . }}
           {{- end }}
-          vaule: {{ .path }}
+            value: {{ .path }}
         {{- end }}
        backendRefs:
         - name: {{ include "auth-service.fullname" $ }}
