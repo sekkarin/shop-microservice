@@ -236,6 +236,8 @@ pipeline {
                                             dir("/applicationset/cluster-config/${service}-service") {
                                                 // Checkout the second repo
                                                 // sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
+                                                sh 'pwd'
+                                                sh 'ls -lr'
                                                 def json = readJSON file: "config.json"
 
                                                 // Update the version field
