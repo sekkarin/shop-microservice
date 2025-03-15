@@ -67,7 +67,7 @@ ingress:
     - path: /
       pathType: PathPrefix
   tls:
-  - secretName: chart-example-tls
+  - secretName: auth-tls
     hosts:
     - auth.warering.online
 

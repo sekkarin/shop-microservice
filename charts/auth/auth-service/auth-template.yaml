@@ -16,7 +16,7 @@ automountServiceAccountToken: true
 apiVersion: v1
 kind: Secret
 metadata:
-  name: auth-service-tls
+  name: auth-tls
 type: kubernetes.io/tls
 data:
   # Self-signed certificate for the whoami.localhost domain.
@@ -94,10 +94,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 80
-      targetPort: http
-      protocol: TCP
-      name: http
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
   selector:
     app.kubernetes.io/name: auth-service
     app.kubernetes.io/instance: auth
@@ -129,53 +129,50 @@ spec:
         app.kubernetes.io/managed-by: Helm
     spec:
       imagePullSecrets:
-        - name: regcred
+      - name: regcred
       serviceAccountName: auth-service
-      securityContext:
-        {}
+      securityContext: {}
       containers:
-        - name: auth-service
-          securityContext:
-            {}
-          image: "harbor.warering.online/shop-microservices/shop-microservice:latest"
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /auth_v1
-              port: 3000
-            initialDelaySeconds: 3
-            periodSeconds: 5
-            successThreshold: 1
-            timeoutSeconds: 1
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /auth_v1
-              port: 3000
-            initialDelaySeconds: 3
-            periodSeconds: 5
-            successThreshold: 1
-            timeoutSeconds: 1
-          resources:
-            null
-          volumeMounts:
-            - mountPath: /etc/env/.env
-              name: env-volume
-              readOnly: true
-              subPath: .env
+      - name: auth-service
+        securityContext: {}
+        image: "harbor.warering.online/shop-microservices/shop-microservice:latest"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /auth_v1
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /auth_v1
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: null
+        volumeMounts:
+        - mountPath: /etc/env/.env
+          name: env-volume
+          readOnly: true
+          subPath: .env
       volumes:
-        - name: env-volume
-          secret:
-            items:
-            - key: .env
-              path: .env
-            optional: false
-            secretName: auth-env
+      - name: env-volume
+        secret:
+          items:
+          - key: .env
+            path: .env
+          optional: false
+          secretName: auth-env
 ---
 # Source: auth-service/templates/gateway.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -193,22 +190,22 @@ spec:
 
   # Only Routes from the same namespace are allowed.
   listeners:
-    - name: http
-      protocol: HTTP
-      port: 80
-      allowedRoutes:
-        namespaces:
-          from: Same
-    - name: https
-      protocol: HTTPS
-      port: 443
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: chart-example-tls
-      allowedRoutes:
-        namespaces:
-          from: Same
+  - name: http
+    protocol: HTTP
+    port: 80
+    allowedRoutes:
+      namespaces:
+        from: Same
+  - name: https
+    protocol: HTTPS
+    port: 443
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: auth-tls
+    allowedRoutes:
+      namespaces:
+        from: Same
 ---
 # Source: auth-service/templates/gateway-class.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -231,19 +228,19 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 spec:
   parentRefs:
-    - name: auth-service
-      sectionName: http
-      kind: Gateway
+  - name: auth-service
+    sectionName: http
+    kind: Gateway
   hostnames:
-    - "auth.warering.online"
+  - "auth.warering.online"
   rules:
-     - matches:
-        - path:
-            pathType: ImplementationSpecific
-          vaule: /
-       backendRefs:
-        - name: auth-service
-          port: 80
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: auth-service
+      port: 80
 ---
 # Source: auth-service/templates/tests/test-connection.yaml
 apiVersion: v1
@@ -260,8 +257,8 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: wget
-      image: busybox
-      command: ['wget']
-      args: ['auth-service:80']
+  - name: wget
+    image: busybox
+    command: [ 'wget' ]
+    args: [ 'auth-service:80' ]
   restartPolicy: Never
