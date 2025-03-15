@@ -245,7 +245,7 @@ pipeline {
                                                 // Write updated JSON back to file
                                                 writeJSON file: "config.json", json: json
                                                 // Show updated JSON
-                                                sh "cat applicationset/cluster-config/${service}-service/config.json"
+                                                sh "cat config.json"
                                             }
                                         }
                                     }
