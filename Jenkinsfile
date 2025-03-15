@@ -233,26 +233,7 @@ pipeline {
                                                 }
                                             }
                                         }
-                                        gitPush(
-                                            credentialsId: GIT_CREDENTIALS_ID, // Use the credentials you stored in Jenkins
-                                            branch: GIT_BRANCH,               // The branch you're pushing to
-                                            remote: GIT_REPO_URL,             // The GitHub repository URL
-                                            pushOnlyIfSuccess: false          // If true, push only if previous stages were successful
-                                        )
-                                        sh """
-                                        # Ensure the correct remote URL is set to the SSH URL
-                                        git remote set-url origin git@github.com:sekkarin/shop-microservice.git  # SSH URL
-                                        git checkout main
-                                        # Set user info for commit
-                                        git config --global user.email "jenkins@gmail.com"
-                                        git config --global user.name "Jenkins CI"
-                                        # Add and commit changes
-                                        git add applicationset/cluster-config/*
-                                        git commit -m "Updated ApplicationsSet version to ${CHART_VERSION}"
-
-                                        # Push to the main branch using SSH
-                                        git push
-                                    """
+                                        gitPush()
                                     }
                             } else {
                                     echo 'No services to deploy. Skipping deployment step.'

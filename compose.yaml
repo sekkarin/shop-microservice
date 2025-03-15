@@ -20,6 +20,7 @@ services:
     cap_add:
       - IPC_LOCK
     privileged: true
+    user: "113:117"
     restart: unless-stopped
     
 
