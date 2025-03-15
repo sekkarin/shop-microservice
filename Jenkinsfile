@@ -238,7 +238,9 @@ pipeline {
                                                 // Checkout the second repo
                                                 // sh 'git clone git@github.com:sekkarin/shop-microservices-argocd.git'
                                                 sh 'pwd'
-                                                sh 'sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$CHART_VERSION\"/" config.json'
+                                                sh """
+                                                    sed -i "s/\\\"version\\\": \\\"[^\"]*\\\"/\\\"version\\\": \\\"${CHART_VERSION}\\\"/" applicationset/cluster-config/auth-service/config.json
+                                                """
                                             }
                                         }
                                     }
