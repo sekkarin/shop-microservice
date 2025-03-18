@@ -80,7 +80,6 @@ gateway:
         mode: Terminate
         certificateRefs:
           - name: secret-tls
-            namespace: default
       allowedRoutes:
         namespaces:
           from: Same
@@ -89,11 +88,10 @@ httpRoute:
   enabled: true
   nameRoute: auth-httproute
   parentRefs:
-    - name: traefik
+    - name:
       sectionName: http
       kind: Gateway
   hostnames:
-    - whoami.localhost
     - whoami.localhost
   rules:
     - matches:
@@ -102,7 +100,6 @@ httpRoute:
             value: /
       backendRefs:
         - name:
-          namespace: default
           port: 80
     - filters:
       - type: RequestRedirect

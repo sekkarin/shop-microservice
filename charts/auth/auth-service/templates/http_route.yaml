@@ -8,7 +8,7 @@ metadata:
 spec:
   parentRefs:
     {{- range .Values.httpRoute.parentRefs }}
-    - name: {{ .name }}
+    - name: {{ $.Values.gateway.nameGateway }}
       sectionName: {{ .sectionName }}
       kind: {{ .kind }}
     {{- end }}
@@ -27,7 +27,6 @@ spec:
       backendRefs:
         {{- range .backendRefs }}
         - name: {{ include "auth-service.fullname" $}}
-          namespace: {{ .namespace }}
           port: {{ .port }}
         {{- end }}
       {{- if .filters }}

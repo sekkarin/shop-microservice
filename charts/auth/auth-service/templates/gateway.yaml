@@ -5,11 +5,10 @@ metadata:
   name: {{ .Values.gateway.nameGateway }}
   labels:
     {{- include "auth-service.labels" . | nindent 4 }}
-
-  {{- with .Values.gateway.spec }}
   spec:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- if .Values.gatewayclass.enabled }}
+    gatewayClassName: {{  .Values.gatewayclass.gatewayclassName }}
+    {{- end }}
   # Only Routes from the same namespace are allowed.
   listeners:
     {{- range .Values.gateway.listeners }}
@@ -22,7 +21,6 @@ metadata:
         certificateRefs:
           {{- range .tls.certificateRefs }}
           - name: {{ .name }}
-            namespace: {{ .namespace }}
           {{- end }}
       {{- end }}
       allowedRoutes:
