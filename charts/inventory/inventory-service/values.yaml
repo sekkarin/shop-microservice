@@ -87,7 +87,7 @@ gateway:
 
 httpRoute:
   enabled: true
-  nameRoute: auth-httproute
+  nameRoute: inventory-httproute
   parentRefs:
     - name:
       sectionName: http
