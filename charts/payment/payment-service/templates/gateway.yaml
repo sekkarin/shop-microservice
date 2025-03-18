@@ -1,0 +1,30 @@
+{{- if .Values.gateway.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.gateway.nameGateway }}
+  labels:
+    {{- include "payment-service.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.gatewayclass.enabled }}
+  gatewayClassName: {{  .Values.gatewayclass.gatewayclassName }}
+  {{- end }}
+  # Only Routes from the same namespace are allowed.
+  listeners:
+    {{- range .Values.gateway.listeners }}
+    - name: {{ .name }}
+      protocol: {{ .protocol }}
+      port: {{ .port }}
+      {{- if .tls }}
+      tls:
+        mode: {{ .tls.mode }}
+        certificateRefs:
+          {{- range .tls.certificateRefs }}
+          - name: {{ .name }}
+          {{- end }}
+      {{- end }}
+      allowedRoutes:
+        namespaces:
+          from: {{ .allowedRoutes.namespaces.from }}
+    {{- end }}
+{{- end -}}
