@@ -5,10 +5,10 @@ metadata:
   name: {{ .Values.gateway.nameGateway }}
   labels:
     {{- include "auth-service.labels" . | nindent 4 }}
-  spec:
-    {{- if .Values.gatewayclass.enabled }}
-    gatewayClassName: {{  .Values.gatewayclass.gatewayclassName }}
-    {{- end }}
+spec:
+  {{- if .Values.gatewayclass.enabled }}
+  gatewayClassName: {{  .Values.gatewayclass.gatewayclassName }}
+  {{- end }}
   # Only Routes from the same namespace are allowed.
   listeners:
     {{- range .Values.gateway.listeners }}
