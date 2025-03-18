@@ -7,7 +7,7 @@ metadata:
   labels:
     helm.sh/chart: auth-service-0.1.0
     app.kubernetes.io/name: auth-service
-    app.kubernetes.io/instance: auth
+    app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.16.0"
     app.kubernetes.io/managed-by: Helm
 automountServiceAccountToken: true
@@ -16,6 +16,7 @@ automountServiceAccountToken: true
 apiVersion: v1
 kind: Secret
 metadata:
+  
   name: auth-tls
 type: kubernetes.io/tls
 data:
@@ -88,19 +89,19 @@ metadata:
   labels:
     helm.sh/chart: auth-service-0.1.0
     app.kubernetes.io/name: auth-service
-    app.kubernetes.io/instance: auth
+    app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.16.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
   ports:
-  - port: 80
-    targetPort: http
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
   selector:
     app.kubernetes.io/name: auth-service
-    app.kubernetes.io/instance: auth
+    app.kubernetes.io/instance: release-name
 ---
 # Source: auth-service/templates/deployment.yaml
 apiVersion: apps/v1
@@ -110,7 +111,7 @@ metadata:
   labels:
     helm.sh/chart: auth-service-0.1.0
     app.kubernetes.io/name: auth-service
-    app.kubernetes.io/instance: auth
+    app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.16.0"
     app.kubernetes.io/managed-by: Helm
 spec:
@@ -118,102 +119,139 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: auth-service
-      app.kubernetes.io/instance: auth
+      app.kubernetes.io/instance: release-name
   template:
     metadata:
       labels:
         helm.sh/chart: auth-service-0.1.0
         app.kubernetes.io/name: auth-service
-        app.kubernetes.io/instance: auth
+        app.kubernetes.io/instance: release-name
         app.kubernetes.io/version: "1.16.0"
         app.kubernetes.io/managed-by: Helm
     spec:
       imagePullSecrets:
-      - name: regcred
+        - name: regcred
       serviceAccountName: auth-service
-      securityContext: {}
+      securityContext:
+        {}
       containers:
-      - name: auth-service
-        securityContext: {}
-        image: "harbor.warering.online/shop-microservices/shop-microservice:latest"
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 80
-          protocol: TCP
-        livenessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /auth_v1
-            port: 3000
-          initialDelaySeconds: 3
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 1
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /auth_v1
-            port: 3000
-          initialDelaySeconds: 3
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 1
-        resources: null
-        volumeMounts:
-        - mountPath: /etc/env/.env
-          name: env-volume
-          readOnly: true
-          subPath: .env
+        - name: auth-service
+          securityContext:
+            {}
+          image: "harbor.warering.online/shop-microservices/shop-microservice:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /auth_v1
+              port: 3000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /auth_v1
+              port: 3000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            null
+          volumeMounts:
+            - mountPath: /etc/env/.env
+              name: env-volume
+              readOnly: true
+              subPath: .env
       volumes:
-      - name: env-volume
-        secret:
-          items:
-          - key: .env
-            path: .env
-          optional: false
-          secretName: auth-env
+        - name: env-volume
+          secret:
+            items:
+            - key: .env
+              path: .env
+            optional: false
+            secretName: auth-env
 ---
 # Source: auth-service/templates/gateway.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: auth-service
+  name: auth-gateway
   labels:
     helm.sh/chart: auth-service-0.1.0
     app.kubernetes.io/name: auth-service
-    app.kubernetes.io/instance: auth
+    app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.16.0"
     app.kubernetes.io/managed-by: Helm
-spec:
-  gatewayClassName: traefik
-
+  spec:
+    gatewayClassName: traefik
   # Only Routes from the same namespace are allowed.
   listeners:
-  - name: http
-    protocol: HTTP
-    port: 80
-    allowedRoutes:
-      namespaces:
-        from: Same
-  - name: https
-    protocol: HTTPS
-    port: 443
-    tls:
-      mode: Terminate
-      certificateRefs:
-      - name: auth-tls
-    allowedRoutes:
-      namespaces:
-        from: Same
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: secret-tls
+            namespace: default
+      allowedRoutes:
+        namespaces:
+          from: Same
 ---
-# Source: auth-service/templates/gateway-class.yaml
+# Source: auth-service/templates/gateway_class.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:
-  name: auth-service
+  name: auth-gatewayclass
 spec:
   controllerName: traefik.io/gateway-controller
+---
+# Source: auth-service/templates/http_route.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: auth-httproute
+  labels:
+    helm.sh/chart: auth-service-0.1.0
+    app.kubernetes.io/name: auth-service
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  parentRefs:
+    - name: traefik
+      sectionName: http
+      kind: Gateway
+  hostnames:
+    - "whoami.localhost"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: auth-service
+          namespace: default
+          port: 80
+    - matches:
+      backendRefs:
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
 ---
 # Source: auth-service/templates/ingress.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -223,24 +261,24 @@ metadata:
   labels:
     helm.sh/chart: auth-service-0.1.0
     app.kubernetes.io/name: auth-service
-    app.kubernetes.io/instance: auth
+    app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.16.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   parentRefs:
-  - name: auth-service
-    sectionName: http
-    kind: Gateway
-  hostnames:
-  - "auth.warering.online"
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
     - name: auth-service
-      port: 80
+      sectionName: http
+      kind: Gateway
+  hostnames:
+    - "auth.warering.online"
+  rules:
+     - matches:
+        - path:
+            type: PathPrefix
+            value: /
+       backendRefs:
+        - name: auth-service
+          port: 80
 ---
 # Source: auth-service/templates/tests/test-connection.yaml
 apiVersion: v1
@@ -250,15 +288,15 @@ metadata:
   labels:
     helm.sh/chart: auth-service-0.1.0
     app.kubernetes.io/name: auth-service
-    app.kubernetes.io/instance: auth
+    app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "1.16.0"
     app.kubernetes.io/managed-by: Helm
   annotations:
     "helm.sh/hook": test
 spec:
   containers:
-  - name: wget
-    image: busybox
-    command: [ 'wget' ]
-    args: [ 'auth-service:80' ]
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['auth-service:80']
   restartPolicy: Never

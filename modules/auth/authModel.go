@@ -6,7 +6,7 @@ import (
 	"github.com/sekkarin/shop-microservice/modules/player"
 )
 
-// not
+// test
 type (
 	PlayerLoginReq struct {
 		Email    string `json:"email" form:"email" validate:"required,email,max=255"`

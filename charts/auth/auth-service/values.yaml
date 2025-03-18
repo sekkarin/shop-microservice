@@ -57,26 +57,57 @@ service:
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 80
 
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-ingress:
+gatewayclass:
   enabled: true
-  className: "traefik"
-  hosts:
-  - host: auth.warering.online
-    paths:
-    - path: /
-      pathType: PathPrefix
-  tls:
-  - secretName: auth-tls
-    hosts:
-    - auth.warering.online
+  gatewayclassName: auth-gatewayclass
+  controllerName: traefik.io/gateway-controller
+gateway:
+  enabled: true
+  nameGateway: auth-gateway
+  spec: 
+    gatewayClassName: traefik
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same 
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: secret-tls
+            namespace: default
+      allowedRoutes:
+        namespaces:
+          from: Same
 
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+httpRoute:
+  enabled: true
+  nameRoute: auth-httproute
+  parentRefs:
+    - name: traefik
+      sectionName: http
+      kind: Gateway
+  hostnames:
+    - whoami.localhost
+    - whoami.localhost
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name:
+          namespace: default
+          port: 80
+    - filters:
+      - type: RequestRedirect
+        requestRedirect:
+          scheme: https
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
