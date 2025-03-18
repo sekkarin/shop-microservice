@@ -5,7 +5,7 @@
 
    {{- if .Values.httpRoute.hostnames }}
       {{- range .Values.httpRoute.hostnames }}
-      http:/{{ . }}
+      http://{{ . }}
       {{- end }}
     {{- end }}
 {{- end }}
