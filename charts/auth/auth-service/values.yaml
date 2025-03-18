@@ -61,6 +61,7 @@ gatewayclass:
   enabled: true
   gatewayclassName: auth-gatewayclass
   controllerName: traefik.io/gateway-controller
+
 gateway:
   enabled: true
   nameGateway: auth-gateway
@@ -72,17 +73,17 @@ gateway:
       port: 80
       allowedRoutes:
         namespaces:
-          from: Same 
-    - name: https
-      protocol: HTTPS
-      port: 443
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: secret-tls
-      allowedRoutes:
-        namespaces:
-          from: Same
+          from: All 
+    # - name: https
+    #   protocol: HTTPS
+    #   port: 443
+    #   tls:
+    #     mode: Terminate
+    #     certificateRefs:
+    #       - name: secret-tls
+    #   allowedRoutes:
+    #     namespaces:
+    #       from: All 
 
 httpRoute:
   enabled: true
@@ -101,10 +102,7 @@ httpRoute:
       backendRefs:
         - name:
           port: 80
-    - filters:
-      - type: RequestRedirect
-        requestRedirect:
-          scheme: https
+
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
