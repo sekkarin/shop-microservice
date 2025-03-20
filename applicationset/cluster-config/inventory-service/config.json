@@ -3,7 +3,7 @@
     "basename": "inventory.service",
     "repoURL": "harbor.warering.online/shop-microservices",
     "chart": "inventory-service",
-    "version": "1.0.415",
+    "version": "1.0.419",
     "namespace": "inventory"
   }
 }
