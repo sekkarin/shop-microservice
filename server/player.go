@@ -10,7 +10,7 @@ import (
 	"github.com/sekkarin/shop-microservice/pkg/grpccon"
 )
 
-// test 5
+// test 1
 func (s *server) playerService() {
 	repo := playerRepository.NewPlayerRepository(s.db)
 	usecase := playerUsecase.NewPlayerUsecase(repo)
