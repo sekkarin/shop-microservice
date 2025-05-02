@@ -5,7 +5,6 @@ pipeline {
         ZAP_IMAGE = 'zaproxy/zap-stable:2.16.0'  // Docker image for OWASP ZAP
         GOLANG_IMAGE = 'golang:1.23'
         TRIVY_IMAGE = 'aquasec/trivy:0.59.1'
-
         IMAGE_NAME = 'shop-microservice'
         TARGET_URL = 'http://localhost:3000'  // URL of the app you want to scan
         ZAP_PORT = '80'  // Port that ZAP will use
