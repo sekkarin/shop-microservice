@@ -11,13 +11,12 @@ pipeline {
         ZAP_PORT = '80'  // Port that ZAP will use
         ZAP_WAIT_TIME = '30'  // Wait for ZAP container to initialize
 
-        HARBOR_REGISTRY = 'harbor.warering.online'
+        HARBOR_REGISTRY = 'harbor.ggez.online'
         HARBOR_PROJECT =  'shop-microservices'
         NAME_IMAGE_WITH_REGISTY = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}"
         SECRETS_DIR = './secrets-prod'
         SECRETS_DIR_TEST = './secrets'
 
-        CHART_NAME = 'auth-service'           // Change to your Helm chart name
         CHART_VERSION = "1.0.${BUILD_NUMBER}"
 
         GIT_CREDENTIALS_ID = 'github-ssh'
