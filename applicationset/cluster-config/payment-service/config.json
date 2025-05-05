@@ -3,7 +3,7 @@
     "basename": "payment.service",
     "repoURL": "harbor.ggez.online/shop-microservices",
     "chart": "payment-service",
-    "version": "1.0.423",
+    "version": "1.0.432",
     "namespace": "payment"
   }
 }
