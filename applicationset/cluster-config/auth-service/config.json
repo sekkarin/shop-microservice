@@ -3,7 +3,7 @@
     "basename": "auth.service",
     "repoURL": "ggez.warering.online/shop-microservices",
     "chart": "auth-service",
-    "version": "1.0.423",
+    "version": "1.0.431",
     "namespace": "auth"
   }
 }
