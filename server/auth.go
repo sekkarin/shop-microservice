@@ -10,6 +10,7 @@ import (
 	"github.com/sekkarin/shop-microservice/pkg/grpccon"
 )
 
+
 func (s *server) authService() {
 	repo := authRepository.NewAuthRepository(s.db)
 	usecase := authUsecase.NewAuthUsecase(repo)

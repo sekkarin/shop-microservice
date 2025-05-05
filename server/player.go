@@ -10,6 +10,7 @@ import (
 	"github.com/sekkarin/shop-microservice/pkg/grpccon"
 )
 
+
 func (s *server) playerService() {
 	repo := playerRepository.NewPlayerRepository(s.db)
 	usecase := playerUsecase.NewPlayerUsecase(repo)
