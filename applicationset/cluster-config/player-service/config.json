@@ -1,7 +1,7 @@
 {
   "cluster": {
     "basename": "player.service",
-    "repoURL": "ggez.warering.online/shop-microservices",
+    "repoURL": "harbor.ggez.online/shop-microservices",
     "chart": "player-service",
     "version": "1.0.423",
     "namespace": "player"

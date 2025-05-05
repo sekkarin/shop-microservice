@@ -1,7 +1,7 @@
 {
   "cluster": {
     "basename": "item.service",
-    "repoURL": "ggez.warering.online/shop-microservices",
+    "repoURL": "harbor.ggez.online/shop-microservices",
     "chart": "item-service",
     "version": "1.0.423",
     "namespace": "item"

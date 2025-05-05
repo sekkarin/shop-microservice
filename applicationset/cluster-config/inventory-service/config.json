@@ -1,7 +1,7 @@
 {
   "cluster": {
     "basename": "inventory.service",
-    "repoURL": "ggez.warering.online/shop-microservices",
+    "repoURL": "harbor.ggez.online/shop-microservices",
     "chart": "inventory-service",
     "version": "1.0.423",
     "namespace": "inventory"
