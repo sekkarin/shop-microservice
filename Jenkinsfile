@@ -145,7 +145,11 @@ pipeline {
                             mkdir secrets
                         fi
                         '''
-                        sh 'docker stop vault-agent'
+                        sh '''
+                        if [ "$(docker ps -aq -f name=vault-agent)" ]; then
+                        docker stop vault-agent
+                        fi
+        '''
                         sh '''
                             docker run -d --rm \
                                 --name vault-agent \
