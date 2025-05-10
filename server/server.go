@@ -19,7 +19,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-
 type (
 	server struct {
 		app        *echo.Echo
