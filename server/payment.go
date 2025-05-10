@@ -6,6 +6,7 @@ import (
 	"github.com/sekkarin/shop-microservice/modules/payment/paymentUsecase"
 )
 
+
 func (s *server) paymentService() {
 	repo := paymentRepository.NewPaymentRepository(s.db)
 	usecase := paymentUsecase.NewPaymentUsecase(repo)
