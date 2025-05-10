@@ -11,6 +11,7 @@ import (
 )
 
 
+
 func (s *server) authService() {
 	repo := authRepository.NewAuthRepository(s.db)
 	usecase := authUsecase.NewAuthUsecase(repo)
