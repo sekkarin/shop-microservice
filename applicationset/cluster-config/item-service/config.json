@@ -3,7 +3,7 @@
     "basename": "item.service",
     "repoURL": "harbor.ggez.online/shop-microservices",
     "chart": "item-service",
-    "version": "1.0.439",
+    "version": "1.0.440",
     "namespace": "item"
   }
 }
