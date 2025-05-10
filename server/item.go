@@ -10,6 +10,7 @@ import (
 	"github.com/sekkarin/shop-microservice/pkg/grpccon"
 )
 
+
 func (s *server) itemService() {
 	repo := itemRepository.NewItemRepository(s.db)
 	usecase := itemUsecase.NewItemUsecase(repo)

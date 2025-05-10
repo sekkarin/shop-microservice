@@ -6,6 +6,7 @@ import (
 	"github.com/sekkarin/shop-microservice/modules/inventory/inventoryUsecase"
 )
 
+
 func (s *server) inventoryService() {
 	repo := inventoryRepository.NewInventoryRepository(s.db)
 	usecase := inventoryUsecase.NewInventoryUsecase(repo)
