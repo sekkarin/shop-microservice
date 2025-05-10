@@ -3,7 +3,7 @@
     "basename": "auth.service",
     "repoURL": "harbor.ggez.online/shop-microservices",
     "chart": "auth-service",
-    "version": "1.0.436",
+    "version": "1.0.438",
     "namespace": "auth"
   }
 }
