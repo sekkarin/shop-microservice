@@ -3,7 +3,7 @@
     "basename": "player.service",
     "repoURL": "harbor.ggez.online/shop-microservices",
     "chart": "player-service",
-    "version": "1.0.440",
+    "version": "1.0.443",
     "namespace": "player"
   }
 }
